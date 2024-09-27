@@ -116,8 +116,9 @@ $ git remote add origin https://github.com/pepcape/NPGR003-24.git
 ```
 3. Finally, you have to give us permissions to access your private
 repository, this is done using the **"Reporter"** role.
-Depending on who your lab supervisor is, you invite <!-- either -->
-https://gitlab.mff.cuni.cz/pelikan <!-- or https://gitlab.mff.cuni.cz/isert -->.
+Depending on who your lab supervisor is, you invite either
+https://gitlab.mff.cuni.cz/pelikan or
+https://gitlab.mff.cuni.cz/todoval.
 
 ## Notes
 * If anything doesn't work well in your **Linux/macOS environment**,
