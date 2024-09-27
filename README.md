@@ -116,7 +116,7 @@ $ git remote add origin https://github.com/pepcape/NPGR003-24.git
 ```
 3. Finally, you have to give us permissions to access your private
 repository, this is done using the **"Reporter"** role.
-Depending on who your lab supervisor is, you invite either
+Depending on who your lab supervisor is, you invite <!-- either -->
 https://gitlab.mff.cuni.cz/pelikan <!-- or https://gitlab.mff.cuni.cz/isert -->.
 
 ## Notes
@@ -126,12 +126,14 @@ https://gitlab.mff.cuni.cz/pelikan <!-- or https://gitlab.mff.cuni.cz/isert -->.
 * You can work in your repositories without major restrictions.
   A strongly recommended place for your solutions is the [solutions](solutions/README.md)
   directory. You'll find short instructions there.
-* We suggest that you add a **tag** with the name of the task to the repository
-  at the time of submission (for example, `01-solution`).
+* You may add a **tag** with the name of the task to the repository
+  at the time of submission (for example, `01-finished`).
   See the [git tag documentation](https://git-scm.com/book/en/v2/Git-Basics-Tagging).
-* Of course, it wouldn't hurt to send us an **email** to let us know that
-  you've solved the task. In time, we will see if the "tag" system is sufficient.
-* Don't forget to point out the extra work you have done (for bonus points).
+* Use GIT branches for your internal purposes only! Your result has to be always
+  in the `main` branch.
+* It wouldn't hurt to send us an **email** to let us know that you've solved the task.
+  Automatic notification system works well on GitHub but not on GitLab.
+* Don't forget to point out the **extra work** you have done (for bonus points).
   Use the "Extra work / Bonuses" section in the documentation.
 * If you want use any third party library, do it correctly and use the
   [NuGet system](https://www.nuget.org/). Many pilot projects are
