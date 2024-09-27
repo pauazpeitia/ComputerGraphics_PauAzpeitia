@@ -18,7 +18,7 @@ with **all RGB colors** in it. That means it must have at least
   message and abort without generating an image.
 
 ## Notes
-You should use `.NET 6` which is available on Windows, macOS and Linux.
+You should use `.NET 8` which is available on Windows, macOS and Linux.
 
 ### Image library
 Using of a simple image processing library is recommended. My option would
@@ -49,11 +49,11 @@ Please place your solution in a separate [solutions](solutions/README.md)
 directory in the repository. You'll find short instructions there.
 
 # Launch date
-**Monday 9 October 2023**
+**Thursday 10 October 2024**
 (Don't work on the solution before this date)
 
 # Deadline
-See the shared [point table](https://docs.google.com/spreadsheets/d/1QLukOcSRPa5exOYW1eUfQWY2WoMjo1menbjQIU7Gvs4/edit?usp=sharing).
+See the shared [point table](https://docs.google.com/spreadsheets/d/11OnE4a-b27eOJ00pfbsYOk7uSdr0hzKrELs_vFG3a_Q/edit?usp=sharing).
 
 # Credit points
 **Basic solution: 8 points**

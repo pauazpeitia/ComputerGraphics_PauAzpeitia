@@ -1,6 +1,6 @@
-# NPGR003-23
+# NPGR003-24
 Support for ***NPGR003 (Introduction to Computer Graphics)*** lecture.
-Year 2023/24.
+Year 2024/25.
 
 See [NPGR003 lecture - current info](https://cgg.mff.cuni.cz/~pepca/lectures/npgr003.current.cz.php).
 
@@ -14,7 +14,7 @@ This global `README.md` defines general rules and conditions,
 see individual directories for task-specific information.
 
 ## Point table
-See [this shared table](https://docs.google.com/spreadsheets/d/1QLukOcSRPa5exOYW1eUfQWY2WoMjo1menbjQIU7Gvs4/edit?usp=sharing)
+See [this shared table](https://docs.google.com/spreadsheets/d/11OnE4a-b27eOJ00pfbsYOk7uSdr0hzKrELs_vFG3a_Q/edit?usp=sharing)
 for current points. Please check the due dates of each task.
 The primary source of organizational information is **the shared table**, not
 the GIT repository.
@@ -24,8 +24,8 @@ complaints. If you are in a different lab group, please contact your
 lab supervisor first.
 
 ## C# source files in task directories
-Some directories contain support files from the teachers. We are using the `.NET 6`
-(select `.NET 6.0 (Long Term Support)` while creating a new project),
+Some directories contain support files from the teachers. We are using the `.NET 8`
+(select `.NET 8.0 (Long Term Support)` while creating a new project),
 it works well on Windows, Linux and macOS.
 
 We use `Visual Studio 2022`, the [Community](https://visualstudio.microsoft.com/vs/community/)
@@ -56,7 +56,7 @@ Example of files and directories that should be copied to the `solutions` direct
 /01-AllTheColors/01-AllTheColors.csproj
 /01-AllTheColors/01-AllTheColors.sln
 /01-AllTheColors/Program.cs
-/01-AllTheColors/README.md    (should be overwritten later by README-TEMPLATE.md)
+/01-AllTheColors/README.md    (overwrite it with your document - see README-TEMPLATE.md)
 /01-AllTheColors/Properties/
 /01-AllTheColors/Properties/launchSettings.json
 ```
@@ -97,13 +97,13 @@ is in the 3rd step (granting permissions to us = lab supervisors).
 2. Connect it to
 our shared GIT using `git remote`. The command might look like this
 ```bash
-$ git remote add origin https://github.com/pepcape/NPGR003-23.git
+$ git remote add origin https://github.com/pepcape/NPGR003-24.git
 ```
 3. Finally, you have to give us permissions to access your private
 repository, this is done using the **"Collaborator"** role.
 Depending on who your lab supervisor is, you invite either
 https://github.com/pepcape or
-https://github.com/tomasiser.
+https://github.com/todoval.
 4. If your GitHub username is a **nickname**, please email us with your
 real name.
 
@@ -112,20 +112,19 @@ real name.
 2. Connect it to
 our shared GIT using `git remote`. The command might look like this
 ```bash
-$ git remote add origin https://github.com/pepcape/NPGR003-23.git
+$ git remote add origin https://github.com/pepcape/NPGR003-24.git
 ```
 3. Finally, you have to give us permissions to access your private
 repository, this is done using the **"Reporter"** role.
 Depending on who your lab supervisor is, you invite either
-https://gitlab.mff.cuni.cz/pelikan or
-https://gitlab.mff.cuni.cz/isert.
+https://gitlab.mff.cuni.cz/pelikan <!-- or https://gitlab.mff.cuni.cz/isert -->.
 
 ## Notes
 * If anything doesn't work well in your **Linux/macOS environment**,
   you should write me (<pepca@cgg.mff.cuni.cz>) as soon as possible.
   Of course you could report positive experience in Linux/macOS as well.
 * You can work in your repositories without major restrictions.
-  A recommended place for your solutions is the [solutions](solutions/README.md)
+  A strongly recommended place for your solutions is the [solutions](solutions/README.md)
   directory. You'll find short instructions there.
 * We suggest that you add a **tag** with the name of the task to the repository
   at the time of submission (for example, `01-solution`).
