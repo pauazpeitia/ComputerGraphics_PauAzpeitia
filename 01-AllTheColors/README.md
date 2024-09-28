@@ -79,8 +79,8 @@ We have included a pilot version of the project, which is not able to generate a
 color image, but it shows the use of the `SixLabors.ImageSharp` library
 to create and save a PNG image with a blue-red checkerboard.
 
-The code was recommended by a `ChatGPT 3.5` assistant,
-the whole conversation is archived [here](https://chat.openai.com/share/048bc53b-9de5-49b6-8fce-302da01b07a9).
+The code was recommended by a `ChatGPT` assistant,
+the whole conversation is archived [here](https://chatgpt.com/share/66f7db02-7af4-8000-a968-f817fb3b891c).
 
 # Example
 This image is downsampled, so it doesn't contain enough colors to meet
