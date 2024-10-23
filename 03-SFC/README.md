@@ -1,24 +1,24 @@
 # Task 03-SFC
-Your task is to implement several **Space Filling Curves** and render them into vector
+Your task is to implement several **space-filling curves** and render them as vector
 SVG graphics.
 
-Examples of curves can be found, for example, in Wikipedia under
+Examples of such curves can be found, for example, on Wikipedia under
 [Space-filling curve](https://en.wikipedia.org/wiki/Space-filling_curve).
-Peano, Hilbert, or Dragon curves are examples of curves that either fill the plane
+The Peano, Hilbert, and Dragon curves are examples of curves that either fill the plane
 directly or can be used to construct a plane using tessellation.
 
-However, in our task we do not have to limit ourselves to SFC curves, we will
-also accept other fractal curves, it is your choice. To successfully complete the task,
+However, in our task, we do not have to limit ourselves to SFC curves, we will
+also accept other fractal curves. It is your choice. To successfully complete the task,
 you will need to implement at least two different curves (built on different
 principles, not variants of the same approach). You will get extra points for
 additional unique curves - see below.
 
 # Task
 The pilot project includes a C# .NET 8 command-line program that implements
-a few simple line parameters and writes the output to the required SVG text file.
-We tried to show that no special libraries are needed to write SVG format, but
+a few simple command-line parameters and writes the output to the required SVG text file.
+We demonstrate that no special libraries are needed to write in SVG format, but
 you can feel free to use other libraries. [SVG.NET](https://github.com/svg-net/SVG)
-is one example.
+is a good example.
 
 To get familiar with the syntax and semantics of SVG, we recommend this website:
 [w3schools - SVG Tutorial](https://www.w3schools.com/graphics/svg_intro.asp).
@@ -44,7 +44,7 @@ Don't forget to describe all arguments in the **documentation**!
 If all goes well, you should save the **SVG file** with the required attributes
 to disk. Use your web browser to view it.
 
-If the input arguments are not OK, don't draw anything, just print a
+If the input arguments are not okay, don't draw anything; just print a
 clear error message to the console.
 
 # Launch date
@@ -65,7 +65,7 @@ See the shared [point table](https://docs.google.com/spreadsheets/d/11OnE4a-b27e
   the scales on the coordinate axes!
 
 **Bonus points: up to 7 additional points**
-* interesting graphic design (color, line thickness, gradients)
+* interesting graphic design (colors, line thickness, gradients)
 * more curve types (beyond the mandatory number of 2)
 * don't limit your creativity (as long as you keep the compulsory part) - you can
   try different combinations of curves, etc.
