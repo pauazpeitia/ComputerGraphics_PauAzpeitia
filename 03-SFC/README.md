@@ -7,8 +7,8 @@ Examples of curves can be found, for example, in Wikipedia under
 Peano, Hilbert, or Dragon curves are examples of curves that either fill the plane
 directly or can be used to construct a plane using tessellation.
 
-However, in our problem we do not have to limit ourselves to SFC curves, we will
-also accept other fractal curves, you can choose. To successfully complete the task,
+However, in our task we do not have to limit ourselves to SFC curves, we will
+also accept other fractal curves, it is your choice. To successfully complete the task,
 you will need to implement at least two different curves (built on different
 principles, not variants of the same approach). You will get extra points for
 additional unique curves - see below.
@@ -32,16 +32,16 @@ To get familiar with the syntax and semantics of SVG, we recommend this website:
 * `-d <number>` - "recursion depth" (number of divisions when using a recursive definition)
 
 **Optional arguments** (optional functionality)
-* curve drawingstyles
+* curve drawing styles
   - color
   - line thickness
-  - possible dynamic style (thinning, color gradients)
+  - "dynamic styles" (thickness modulation, color gradients)
 * fractal curve definition parameters - depends on the curve type
 
 Don't forget to describe all arguments in the **documentation**!
 
 # Output
-If all goes well, you should save the SVG file with the required parameters
+If all goes well, you should save the **SVG file** with the required attributes
 to disk. Use your web browser to view it.
 
 If the input arguments are not OK, don't draw anything, just print a
@@ -67,10 +67,10 @@ See the shared [point table](https://docs.google.com/spreadsheets/d/11OnE4a-b27e
 **Bonus points: up to 7 additional points**
 * interesting graphic design (color, line thickness, gradients)
 * more curve types (beyond the mandatory number of 2)
-* don't limit your creativity (as long as the compulsory part is included) - you can
+* don't limit your creativity (as long as you keep the compulsory part) - you can
   try different combinations of curves, etc.
 
 ## Use of AI assistant
 Using an AI assistant is recommended! But you have to be critical and
 test all its suggestions thoroughly. In particular, test singular cases
-(trivial recursion depth, limiting window dimensions or aspect ratios).
+(trivial recursion depth, extreme window dimensions or aspect ratios).
