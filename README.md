@@ -1,6 +1,4 @@
-<<<<<<< HEAD
-# ComputerGraphics-
-=======
+<<<<<<<<< Temporary merge branch 1
 # NPGR003-24
 Support for ***NPGR003 (Introduction to Computer Graphics)*** lecture.
 Year 2024/25.
@@ -150,4 +148,6 @@ https://gitlab.mff.cuni.cz/todoval.
   [solutions/README.md](solutions/README.md) for instructions)!
 * Visual Studio 2022 supports direct **MarkDown editing** (with live
   result preview) starting from the 17.5 update
->>>>>>> bab70ddd1d5affa782786f903a16132d8c378f18
+=========
+# ComputerGraphics-
+>>>>>>>>> Temporary merge branch 2
