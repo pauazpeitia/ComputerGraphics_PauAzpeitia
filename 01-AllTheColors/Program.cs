@@ -74,7 +74,7 @@ internal class Program
            // Save the image to a file with the specified filename
            image.Save(o.FileName);
 
-           Console.WriteLine($"Image '{o.FileName}' created successfully.");
+           Console.WriteLine($"Image '{o.FileName}' created successfully. Y me cago en tu vida bisca el barça");
          }
        });
   }
