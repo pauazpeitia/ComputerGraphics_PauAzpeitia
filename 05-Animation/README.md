@@ -70,6 +70,9 @@ creating a video from individual frames is called [Slideshow](https://trac.ffmpe
 # Deadline
 See the shared [point table](https://docs.google.com/spreadsheets/d/11OnE4a-b27eOJ00pfbsYOk7uSdr0hzKrELs_vFG3a_Q/edit?usp=sharing).
 
+The submission deadline is deliberately set before the last lecture of the semester so that
+we can select some of the best animations to show to everyone in the lecture.
+
 # Credit points
 **Basic solution: 7 points**
 * all generated frames should have circular symmetric to resemble a mandala (see the previous task `04-Mandala`).
