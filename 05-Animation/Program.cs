@@ -43,13 +43,13 @@ internal class Program
          for (int frame = 0; frame < frames; frame++ )
          {
            // Create a new image with the specified dimensions
-           using (var image = new Image<Rgba32>(o.Width, o.Height))
+           using (var image = new Image<Rgba32>(o.Width, o.Height, BackgroundColor))
            {
              float time = frame / o.FPS;
              float angle = time * velocity;
              PointF target = center + radius * new PointF((float)Math.Sin(angle), -(float)Math.Cos(angle));
 
-             image.Mutate(i => i.Clear(BackgroundColor).DrawLine(DrawColor, 3.0f, center, target));
+             image.Mutate(i => i.DrawLine(DrawColor, 3.0f, center, target));
 
              // Save the frame to a file with the synthetic filename
              string fileName = string.Format(o.FileMask, frame);
