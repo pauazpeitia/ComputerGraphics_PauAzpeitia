@@ -29,11 +29,11 @@ applicable idea (see the example image below).
 
 Just one more idea: there are functions that can be used for mixing
 distances, see
-[A Very Quick Introduction to Metaballs](https://people.computing.clemson.edu/~dhouse/courses/881/notes/metaballs/index.html)
-[Blobby Implicit Surfaces (Pixar, 1999)](https://renderman.jp/appnote.31.html)
-[Metaballs (Wikipedia)](https://en.wikipedia.org/wiki/Metaballs)
+* [A Very Quick Introduction to Metaballs](https://people.computing.clemson.edu/~dhouse/courses/881/notes/metaballs/index.html)
+* [Blobby Implicit Surfaces (Pixar, 1999)](https://renderman.jp/appnote.31.html)
+* [Metaballs (Wikipedia)](https://en.wikipedia.org/wiki/Metaballs)
 
-You can get inspiration from classical mandalas, see for example this one
+You can get inspiration from classical mandalas as well, see for example this
 [Carmia Jordaan's page](https://www.clementinecreative.co.za/step-by-step-tutorial-on-how-to-draw-a-mandala/),
 or use Google or AI.
 
