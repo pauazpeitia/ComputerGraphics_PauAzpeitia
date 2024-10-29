@@ -8,13 +8,13 @@ Of course, you can use multiple symmetry, which can be seen in
 Asian mandalas as well.
 
 ## Ideas
-You can draw pixel by pixel or use **drawing routines** from the
-[ImageSharp library](https://www.nuget.org/packages/SixLabors.ImageSharp/).
+A. You can draw pixel by pixel or use **drawing routines** from the
+[ImageSharp.Drawing library](https://www.nuget.org/packages/SixLabors.ImageSharp/).
 If you draw the same "batch" of figures several times with different
 rotation around the center of the image, you almost have it (you will probably have to fix
 the overlap of the 1st and the last batch).
 
-The second idea is to create an **"image function"** that includes rotational
+B. The second idea is to create an **"image function"** that includes rotational
 symmetry in its definition. A small example: let us calculate
 the closest distance from the current pixel to one of the four lines
 (vertical `x = 0`, horizontal `y = 0`, diagonal `y = x` and side diagonal
@@ -37,7 +37,7 @@ You can get inspiration from classical mandalas, see for example this one
 [Carmia Jordaan's page](https://www.clementinecreative.co.za/step-by-step-tutorial-on-how-to-draw-a-mandala/),
 or use Google or AI.
 
-## Technical ideas
+## Technical notes
 You may find the [page on easing functions](https://easings.net/) useful.
 
 If you need to define a rotation manually, use formulas:
@@ -56,6 +56,15 @@ If you need to define a rotation manually, use formulas:
   // Diagonal terms are always positive ("cosa")
 ```
 
+### Pilot projects
+If your mandala is drawn using `ImageSharp.Drawing` commands, you may find
+AI assistants to help you set up the project and learn how to use the drawing
+routines. In fact, the next `05-Animation` task has a simple project using
+`ImageSharp.Drawing`.
+
+In the case of image-function based approaches, you can use the project from the
+`01-AllTheColors`, since all you need is to create an image from individual
+pixels.
 
 ## Animation
 Note that there will be a next task [05-Animation](../05-Animation/README.md)

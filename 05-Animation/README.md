@@ -64,7 +64,7 @@ For advanced settings try the [FFmpeg wiki](https://trac.ffmpeg.org/wiki), speci
 creating a video from individual frames is called [Slideshow](https://trac.ffmpeg.org/wiki/Slideshow).
 
 # Launch date
-**Monday 13 November 2023**
+**Thursday 7 November 2024**
 (Don't work on the solution before this date)
 
 # Deadline
@@ -72,12 +72,13 @@ See the shared [point table](https://docs.google.com/spreadsheets/d/11OnE4a-b27e
 
 # Credit points
 **Basic solution: 7 points**
-* all generated frames must be circular symmetric to resemble a mandala (see the previous task `04-Mandala`)
+* all generated frames should have circular symmetric to resemble a mandala (see the previous task `04-Mandala`).
+  Well justified exceptions (e.g. for animation transitions) will be accepted
 * image size in pixels via arguments
 * output filename mask specified in an argument
 * C# program creates animation frames as a sequence of PNG images on disk
 * encoding of the video-file (e.g. using the `FFmpeg` utility)
-* publishing of the video on some public platform (YouTube, Vimeo, Google Drive...)
+* publishing of the video on some public platform (YouTube, Vimeo, Google Drive, Facebook, Instagram...)
 * documentation in the `README.md` file (including definition of all command
   line arguments and URL of the uploaded video)
 
