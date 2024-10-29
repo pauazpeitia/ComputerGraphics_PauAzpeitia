@@ -86,6 +86,8 @@ See the shared [point table](https://docs.google.com/spreadsheets/d/11OnE4a-b27e
 * invention, animation invention
 * visual appeal
 * cyclic animation (plays smoothly in the "auto-repeat" mode)
+* if your solutions to the `04-Mandala` and `05-Animation` problems share the same "mandala-idea",
+  you will receive only one set of bonus points for it
 
 ## Use of AI assistant
 Using an AI assistant in this task will be very difficult. Sure, you can use

@@ -58,12 +58,12 @@ If you need to define a rotation manually, use formulas:
 
 ### Pilot projects
 If your mandala is drawn using `ImageSharp.Drawing` commands, you may find
-AI assistants to help you set up the project and learn how to use the drawing
+AI assistants helpful to set up the project and learn how to use the drawing
 routines. In fact, the next `05-Animation` task has a simple project using
 `ImageSharp.Drawing`.
 
 In the case of image-function based approaches, you can use the project from the
-`01-AllTheColors`, since all you need is to create an image from individual
+`01-AllTheColors` task, since all you need is to create an image from individual
 pixels.
 
 ## Animation
@@ -87,7 +87,7 @@ Please place your solution in a separate [solutions](solutions/README.md)
 directory in the repository. You'll find short instructions there.
 
 # Launch date
-**Monday 30 October 2023**
+**Thursday 31 October 2024**
 (Don't work on the solution before this date)
 
 # Deadline
