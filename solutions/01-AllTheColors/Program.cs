@@ -53,7 +53,7 @@ class Program
 
                 Console.WriteLine("Image trivial.png created successfully.");
             }
-            if(o.RandomMode = true)
+            if(o.RandomMode = true) //Random mode
             {
                 
                 int width = 4096;
