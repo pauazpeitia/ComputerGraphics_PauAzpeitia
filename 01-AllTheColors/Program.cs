@@ -30,8 +30,8 @@ public class Options
 internal class Program
 {
   // Constants for tile colors
-  private static Rgba32 FirstColor  = new Rgba32(0x20, 0x20, 0xFF); // default is Blue (#2020ff)
-  private static Rgba32 SecondColor = new Rgba32(0xFF, 0x20, 0x20); // default is Red  (#ff2020)
+  private static Rgba32 FirstColor  = new Rgba32(0x23, 0xB0, 0xF1); // default is Blue (#2020ff)
+  private static Rgba32 SecondColor = new Rgba32(0xAB, 0xCD, 0x99); // default is Red  (#ff2020)
 
   static void Main (string[] args)
   {
@@ -53,7 +53,7 @@ internal class Program
            var rgbColor = ColorSpaceConverter.ToRgb(hsvColor);
            SecondColor = new Rgba32(rgbColor.R, rgbColor.G, rgbColor.B);
          }
-
+        
          // Create a new image with the specified dimensions
          using (var image = new Image<Rgba32>(o.Width, o.Height))
          {
@@ -62,9 +62,9 @@ internal class Program
              for (int x = 0; x < o.Width; x++)
              {
                // Determine the tile color based on position
-               Rgba32 tileColor = ((x / o.TileSize) + (y / o.TileSize)) % 2 == 0
-                ? FirstColor   // even tiles
-                : SecondColor; // odd tiles
+               Rgba32 tileColor = ((x / o.TileSize) + (y / o.TileSize)) % 2 == 0 
+               ? FirstColor   // even tiles 
+               : SecondColor; // odd tiles
 
                // Set the pixel color
                image[x, y] = tileColor;
@@ -74,7 +74,7 @@ internal class Program
            // Save the image to a file with the specified filename
            image.Save(o.FileName);
 
-           Console.WriteLine($"Image '{o.FileName}' created successfully. Y me cago en tu vida bisca el barça");
+           Console.WriteLine($"Image '{o.FileName}' created successfully.");
          }
        });
   }
