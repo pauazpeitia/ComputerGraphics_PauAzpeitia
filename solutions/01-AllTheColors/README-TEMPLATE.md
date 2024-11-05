@@ -4,21 +4,17 @@
 Pau Azpeitia
 
 ## Command line arguments
---t recives '0' for not running the trivial mode and '1' for running it. (Default 1)
---r recives '0' for not running the random mode and '1' for running it. (Default 1)
---o recives '0' for not running the ornament mode and '1' for running it. (Default 1)
+--o for entering the name of the .png file.
+--m for choosing the mode of the program (1 for trivial, 2 for random, 3 for ornament)
 --w to specify the width (Default 4096)
 --h to specify the height (Defualt 4096)
---trivialFileName for entering the name of the trivial mode .png file
---randomFileName for entering the name of the random mode .png file
---ornamentFileName for entering the name of the ornament mode .png file
-
 
 ## Input data
 This program does not require any input data from the user. 
 
 ## Algorithm
-For a hight * wight argument less than 2^24 pixels, the program rejects the input (not all colors can fit in the image).
+For a height * widht argument less than 2^24 pixels, the program rejects the input (not all colors can fit in the image).
+For a height or widht argument greater than 32768, the program rejects the input (ImageSharp has limit buffer of 4294967296, InvalidMemoryOperationException).
 The idea of the ornament mode is to go around the first pixel located in the middle of the image. There are comments in the code so that the algorithm can be understand.
 
 ## Extra work / Bonuses
