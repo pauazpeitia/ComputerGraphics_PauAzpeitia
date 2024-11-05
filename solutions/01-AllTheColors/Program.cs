@@ -35,12 +35,20 @@ class Program
             {
                 throw new ArgumentException("Name of the output file should have the extension .png.");
             }
-            //Indicate wich Mode is activated
+            // Indicate which Mode is activated
             Console.WriteLine($"Mode {o.Mode} activated");
-
+            
             int width = o.Width;
             int height = o.Height;
             int maxcombinationcolors = 16777216;
+            if(width > 32768)
+            {
+                throw new ArgumentException("Recommended limit for width is less than 32768 pixels");
+            }
+            if(height > 32768)
+            {
+                throw new ArgumentException("Recommended limit for height is less than 32768 pixels");
+            }
 
             if (width * height < maxcombinationcolors)
             {
@@ -58,32 +66,52 @@ class Program
                     CreateOrnamentImage(width, height, o.OutputFileName);
                     break;
             }
-
         });
     }     
 
-    static void CreateTrivialImage(int width,int height,string fileName)
+    static void CreateTrivialImage(int width, int height, string fileName)
     {
-        using (var image = new Image<Rgba32>(width, height))
+        int maxcombinationcolors = 16777216;
+        List<Rgba32> colors = new List<Rgba32>();
+        for (int r = 0; r < 256; r++)
+        {
+            for (int g = 0; g < 256; g++)
+            {
+                for (int b = 0; b < 256; b++)
                 {
-                    int pixelIndex = 0;
-                    for (int r = 0; r < 256; r++)
-                    {
-                        for (int g = 0; g < 256; g++)
-                        {
-                            for (int b = 0; b < 256; b++)
-                            {
-                                int x = pixelIndex % width;
-                                int y = pixelIndex / width;
-                                image[x, y] = new Rgba32((byte)r, (byte)g, (byte)b);
-                                pixelIndex++;
-                            }
-                        }
-                    }
-                    image.Save(fileName);
+                    colors.Add(new Rgba32((byte)r, (byte)g, (byte)b));
                 }
+            }
+        }
 
-                Console.WriteLine($"Image {fileName} created successfully.");
+        using (var image = new Image<Rgba32>(width, height))
+        {
+            int colorIndex = 0;
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    image[x, y] = colors[colorIndex];
+                    colorIndex++;
+                    if (colorIndex >= maxcombinationcolors) break;
+                }
+                if (colorIndex >= maxcombinationcolors) break;
+            }
+
+            try
+            {
+                image.Save(fileName);
+                Console.WriteLine("Image stored correctly");
+                
+                // Image verificator
+                bool isValid = IsImageValid(fileName);
+                Console.WriteLine(isValid ? "Image valid." : "Image corrupted.");
+            }       
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error on storing the image: {ex.Message}");
+            }
+        }
     }
     
     static void CreateRandomImage(int width, int height, string fileName)
@@ -91,79 +119,101 @@ class Program
         int maxcombinationcolors = 16777216;
         int colorIndex = 0;
         List<Rgba32> colors = new List<Rgba32>();
-                for (int r = 0; r < 256; r++)
+        for (int r = 0; r < 256; r++)
+        {
+            for (int g = 0; g < 256; g++)
+            {
+                for (int b = 0; b < 256; b++)
                 {
-                    for (int g = 0; g < 256; g++)
+                    colors.Add(new Rgba32((byte)r, (byte)g, (byte)b));
+                }
+            }
+        }
+
+        Random rng = new Random();
+        int n = colors.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = rng.Next(n + 1);
+            var value = colors[k];
+            colors[k] = colors[n];
+            colors[n] = value;
+        }
+
+        using (var image = new Image<Rgba32>(width, height))
+        {
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    image[x, y] = colors[colorIndex];
+                    if (colorIndex < maxcombinationcolors - 1)
                     {
-                        for (int b = 0; b < 256; b++)
-                        {
-                            colors.Add(new Rgba32((byte)r, (byte)g, (byte)b));
-                        }
+                        colorIndex++;
+                    }
+                    else
+                    {
+                        colorIndex = 0;
                     }
                 }
-
-                Random rng = new Random();
-                int n = colors.Count;
-                while (n > 1)
-                {
-                    n--;
-                    int k = rng.Next(n + 1);
-                    var value = colors[k];
-                    colors[k] = colors[n];
-                    colors[n] = value;
-                }
-
-                using (var image = new Image<Rgba32>(width, height))
-                {
-                    for (int y = 0; y < height; y++)
-                    {
-                        for (int x = 0; x < width; x++)
-                        {
-                            image[x, y] = colors[colorIndex];
-                            if (colorIndex < maxcombinationcolors - 1)
-                            {
-                                colorIndex++;
-                            }
-                            else
-                            {
-                                colorIndex = 0;
-                            }
-                        }
-                    }
-                    image.Save(fileName);
-                }
-                Console.WriteLine($"Image {fileName} created successfully.");
+            }
+            try
+            {
+                image.Save(fileName);
+                Console.WriteLine("Image stored correctly");
+                
+                // Image verificator
+                bool isValid = IsImageValid(fileName);
+                Console.WriteLine(isValid ? "Image valid." : "Image corrupted.");
+            }       
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error on storing the image: {ex.Message}");
+            }
+        }
     }
 
     static void CreateOrnamentImage(int width, int height, string fileName)
     {
         int colorIndex = 0;
         List<Rgba32> colors1 = new List<Rgba32>();
-                for (int r = 0; r < 256; r++)
+        for (int r = 0; r < 256; r++)
+        {
+            for (int g = 0; g < 256; g++)
+            {
+                for (int b = 0; b < 256; b++)
                 {
-                    for (int g = 0; g < 256; g++)
-                    {
-                        for (int b = 0; b < 256; b++)
-                        {
-                            colors1.Add(new Rgba32((byte)r, (byte)g, (byte)b));
-                        }
-                    }
+                    colors1.Add(new Rgba32((byte)r, (byte)g, (byte)b));
                 }
+            }
+        }
 
-                using (var image = new Image<Rgba32>(width, height))
-                {
-                    int x = width / 2;
-                    int y = height / 2;
-                    colorIndex = 0; 
+        using (var image = new Image<Rgba32>(width, height))
+        {
+            int x = width / 2;
+            int y = height / 2;
+            colorIndex = 0; 
 
-                    image[x, y] = colors1[colors1.Count - 1]; 
-                    FillAroundPixel(image, x, y, colors1);
+            image[x, y] = colors1[colors1.Count - 1]; 
+            FillAroundPixel(image, x, y, colors1);
 
-                    image.Save(fileName);
-                }
-                Console.WriteLine($"Image {fileName} created successfully.");
+            try
+            {
+                image.Save(fileName);
+                Console.WriteLine("Image stored correctly");
+                
+                // Image verificator
+                bool isValid = IsImageValid(fileName);
+                Console.WriteLine(isValid ? "Image valid." : "Image corrupted.");
+            }       
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error on storing the image: {ex.Message}");
+            }
+        }
     }
-    
+
     static void FillAroundPixel(Image<Rgba32> image, int startX, int startY, List<Rgba32> colors)
     {
         int width = image.Width;
@@ -208,6 +258,21 @@ class Program
             {
                 pixelsToProcess.Enqueue((x + dx, y + dy));
             }
+        }
+    }
+
+    static bool IsImageValid(string filePath)
+    {
+        try
+        {
+            using (var image = Image.Load(filePath))
+            {
+                return true;
+            }
+        }
+        catch (Exception)
+        {
+            return false;
         }
     }
 }
