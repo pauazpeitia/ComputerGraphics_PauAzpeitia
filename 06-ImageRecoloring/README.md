@@ -43,11 +43,11 @@ Please place your solution in a separate [solutions](solutions/README.md)
 directory in the repository. You'll find short instructions there.
 
 # Launch date
-**Monday 20 November 2023**
+**Thursday 14 November 2024**
 (Don't work on the solution before this date)
 
 # Deadline
-See the shared [point table](https://docs.google.com/spreadsheets/d/1QLukOcSRPa5exOYW1eUfQWY2WoMjo1menbjQIU7Gvs4/edit?usp=sharing).
+See the shared [point table](https://docs.google.com/spreadsheets/d/11OnE4a-b27eOJ00pfbsYOk7uSdr0hzKrELs_vFG3a_Q/edit?usp=sharing).
 
 # Credit points
 **Basic solution: 7 points**
