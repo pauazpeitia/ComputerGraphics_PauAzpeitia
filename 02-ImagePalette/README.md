@@ -13,7 +13,7 @@ less number of colors (minimum palette size is 1).
   * alternative output formats (PNG image and SVG image) will be demonstrated
 	in the lab. They will be included in a pilot project here.
 * One command line argument defines the **input file name**, another the **desired
-  number of colors**, for example
+  number of colors** , for example
 ```bash
  > imagepalette -i "input.png" -c 10
 ```
