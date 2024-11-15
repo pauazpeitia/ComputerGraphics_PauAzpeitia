@@ -9,56 +9,83 @@ namespace _02_ImagePalette;
 
 public class Options
 {
-  [Option('o', "output", Required = false, Default = "", HelpText = "Output file-name (SVG).")]   //Default '' sera para que lo devuelva en RGB, si pone .svg que lo devuelva de esa manera.
+  [Option('o', "output", Required = false, Default = null, HelpText = "Output file-name (SVG).")]   // Default '' will return colors in RGB; if '.svg' is provided, it will return colors in that format.
   public string OutputFileName { get; set; } = string.Empty;
   [Option('i', "input", Required = true, HelpText = "Input image file-name.")]
   public string InputFileName { get; set; }
   [Option('c', "colors", Required = true, HelpText = "Desired number of colors.")]
-  public int NumberofColors { get; set; }
+  public int NumberofColors { get; set; } 
 }
 
 class Program
 {
-
   static void Main (string[] args)
   {
     Parser.Default.ParseArguments<Options>(args)
       .WithParsed<Options>(o =>
       {
-        var image = Image.Load<Rgba32>(o.InputFileName);    //Leer imagen y guardar en variable image
-
-        // Lista para almacenar los colores en espacio HSV
-        List<Hsv> hsvPixels = new List<Hsv>();
-
-        for (int y = 0; y < image.Height; y++)
+        if(o.NumberofColors < 3 || o.NumberofColors > 10)
         {
-          for (int x = 0; x < image.Width; x++)
+          throw new ArgumentException("Program provides only 3 to 10 characteristic colors");
+        }
+        if(!o.OutputFileName.EndsWith(".svg") && !string.IsNullOrEmpty(o.OutputFileName))
+        {
+          throw new ArgumentException("Name of the output file should have the extension .svg, or be empty if RGB description wanted.");
+        }
+        try
+        {
+          var  image = Image.Load<Rgba32>(o.InputFileName);    // Load image and save to the variable `image`.
+          List<Hsv> hsvPixels = new List<Hsv>();               // List to store colors in HSV space.
+          int step = Math.Max(1, Math.Min(image.Width, image.Height) / 500); // Define dynamic step.
+          for (int y = 0; y < image.Height; y += step)
           {
-              var pixel = image[x, y];
-              var hsv = Rgba32ToHsv(pixel);
-              hsvPixels.Add(hsv);
+            for (int x = 0; x < image.Width; x += step)
+            {
+                var pixel = image[x, y];
+                var hsv = Rgba32ToHsv(pixel);
+                hsvPixels.Add(hsv);
+            }
+          }
+          var clusters = KMeansCluster(hsvPixels, o.NumberofColors);
+          // Convert clusters to RGB
+          var rgbColors = clusters.Select(HsvToRgba32).ToList();
+
+          if (string.IsNullOrEmpty(o.OutputFileName))
+          {
+              // Sort colors by spectrum (hue, saturation, value)
+              rgbColors = rgbColors
+                  .Select(color => (Color: color, Hsv: Rgba32ToHsv(color))) // Convert to HSV for sorting
+                  .OrderBy(tuple => tuple.Hsv.H) // Sort by hue
+                  .ThenBy(tuple => tuple.Hsv.S) // Secondary criterion: saturation
+                  .ThenBy(tuple => tuple.Hsv.V) // Tertiary criterion: value
+                  .Select(tuple => tuple.Color) // Convert back to RGB
+                  .ToList();
+
+              // Return colors as text in RGB format
+              foreach (var color in rgbColors)
+              {
+                  Console.WriteLine($"RGB({color.R}, {color.G}, {color.B})");
+              }
+          }
+          else
+          {
+              // Sort colors by spectrum before generating the SVG
+              rgbColors = rgbColors
+                  .Select(color => (Color: color, Hsv: Rgba32ToHsv(color)))
+                  .OrderBy(tuple => tuple.Hsv.H)
+                  .ThenBy(tuple => tuple.Hsv.S)
+                  .ThenBy(tuple => tuple.Hsv.V)
+                  .Select(tuple => tuple.Color)
+                  .ToList();
+
+              // Generate SVG file
+              GenerateSvg(o.OutputFileName, rgbColors);
+              Console.WriteLine($"Palette saved to {o.OutputFileName}");
           }
         }
-
-
-        //Aplicar algorithmo
-        var clusters = KMeansCluster(hsvPixels, o.NumberofColors);
-        // Convertir clusters a RGB
-        var rgbColors = clusters.Select(HsvToRgba32).ToList();
-
-        if (string.IsNullOrEmpty(o.OutputFileName))
+        catch (Exception ex)
         {
-            // Devolver colores como texto en formato RGB
-            foreach (var color in rgbColors)
-            {
-                Console.WriteLine($"RGB({color.R}, {color.G}, {color.B})");
-            }
-        }
-        else
-        {
-            // Generar archivo SVG
-            GenerateSvg(o.OutputFileName, rgbColors);
-            Console.WriteLine($"Palette saved to {o.OutputFileName}");
+          Console.WriteLine($"Error on storing the image: {ex.Message}");
         }
       });
   }
@@ -83,12 +110,12 @@ class Program
     float g = rgba.G / 255f;
     float b = rgba.B / 255f;
     
-    // Obtener el valor máximo y mínimo de los tres colores
+    // Get the maximum and minimum values of the three colors
     float max = Math.Max(r, Math.Max(g, b));
     float min = Math.Min(r, Math.Min(g, b));
     float delta = max - min;
 
-    // Matiz (Hue)
+    // Hue
     float h = 0f;
     if (delta != 0)
     {
@@ -102,13 +129,14 @@ class Program
         if (h < 0f) h += 360f;
     }
 
-    // Saturación (Saturation)
+    // Saturation
     float s = (max == 0) ? 0 : delta / max;
 
-    // Valor (Value)
+    // Value
     float v = max;
     return new Hsv(h, s, v);
   }
+
   static Rgba32 HsvToRgba32(Hsv hsv)
   {
       float h = hsv.H / 360f;
@@ -118,7 +146,7 @@ class Program
       float r = 0f, g = 0f, b = 0f;
       if (s == 0)
       {
-          r = g = b = v; // Gris
+          r = g = b = v; // Gray
       }
       else
       {
@@ -140,11 +168,11 @@ class Program
       return new Rgba32((byte)(r * 255), (byte)(g * 255), (byte)(b * 255));
   }
   
-  //Algorithmo K-means cluster
+  // K-means clustering algorithm
   static List<Hsv> KMeansCluster(List<Hsv> colors, int k)
   {
     Random rand = new Random();
-    // Seleccionar K colores aleatorios como centros iniciales
+    // Select K random colors as initial centroids
     var centroids = colors.OrderBy(x => rand.Next()).Take(k).ToList();
     var previousCentroids = new List<Hsv>();
 
@@ -152,7 +180,7 @@ class Program
 
     while (!centroids.SequenceEqual(previousCentroids))
     {
-        // Asignar cada color al centroide más cercano
+        // Assign each color to the closest centroid
         assignments.Clear();
         for (int i = 0; i < colors.Count; i++)
         {
@@ -160,10 +188,10 @@ class Program
             assignments.Add(closestCentroid);
         }
 
-        // Guardar los centroids anteriores
+        // Save the previous centroids
         previousCentroids = new List<Hsv>(centroids);
 
-        // Recalcular los nuevos centroids como el promedio de los colores asignados
+        // Recalculate new centroids as the average of assigned colors
         for (int i = 0; i < k; i++)
         {
             var assignedColors = colors.Where((c, idx) => assignments[idx] == i).ToList();
@@ -197,7 +225,7 @@ class Program
 
   static float CalculateDistance(Hsv c1, Hsv c2)
   {
-    // Usamos la distancia euclidiana en el espacio HSV
+    // Use Euclidean distance in HSV space
     return (float)Math.Sqrt(Math.Pow(c1.H - c2.H, 2) + Math.Pow(c1.S - c2.S, 2) + Math.Pow(c1.V - c2.V, 2));
   }
 
@@ -210,28 +238,25 @@ class Program
   }
   static void GenerateSvg(string outputFileName, List<Rgba32> colors)
   {
-    using (XmlWriter writer = XmlWriter.Create(outputFileName, new XmlWriterSettings { Indent = true }))
+    using XmlWriter writer = XmlWriter.Create(outputFileName);
+    writer.WriteStartDocument();
+    writer.WriteStartElement("svg", "http://www.w3.org/2000/svg");
+    writer.WriteAttributeString("width", "800");
+    writer.WriteAttributeString("height", "200");
+
+    int barWidth = 800 / colors.Count;
+    for (int i = 0; i < colors.Count; i++)
     {
-        writer.WriteStartDocument();
-        writer.WriteStartElement("svg", "http://www.w3.org/2000/svg");
-        writer.WriteAttributeString("width", "100");
-        writer.WriteAttributeString("height", (50 * colors.Count).ToString());
-
-        for (int i = 0; i < colors.Count; i++)
-        {
-            var color = colors[i];
-            writer.WriteStartElement("rect");
-            writer.WriteAttributeString("x", "0");
-            writer.WriteAttributeString("y", (i * 50).ToString());
-            writer.WriteAttributeString("width", "100");
-            writer.WriteAttributeString("height", "50");
-            writer.WriteAttributeString("fill", $"rgb({color.R},{color.G},{color.B})");
-            writer.WriteEndElement();
-        }
-
+        writer.WriteStartElement("rect");
+        writer.WriteAttributeString("x", (i * barWidth).ToString());
+        writer.WriteAttributeString("y", "0");
+        writer.WriteAttributeString("width", barWidth.ToString());
+        writer.WriteAttributeString("height", "200");
+        writer.WriteAttributeString("fill", $"rgb({colors[i].R}, {colors[i].G}, {colors[i].B})");
         writer.WriteEndElement();
-        writer.WriteEndDocument();
     }
-  }
 
+    writer.WriteEndElement();
+    writer.WriteEndDocument();
+  }
 }
