@@ -3,124 +3,111 @@ using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using System.Diagnostics;
-using System.IO;
+using CommandLine;
 
+namespace _04_Mandala;
 
+public class Options
+{
+  [Option('o', "output", Required = false, Default = "output.png", HelpText = "Output file-name (.png).")]
+  public string FileName { get; set; } = "output.svg";
+
+}
 class Program
 {
     static void Main(string[] args)
     {
-        int width = 800;
-        int height = 800;
-        PointF center = new PointF(width / 2, height / 2);
-        
-        Mandalas mandala1 = new Mandalas();
-        mandala1.FirstImplementation(center, width, height);
+        Parser.Default.ParseArguments<Options>(args)
+      .WithParsed<Options>(o =>
+      {
+            if(!o.FileName.EndsWith(".png") || !o.FileName.EndsWith(".jpg"))
+            {
+                throw new ArgumentException("Name of the output file should have the extension .png or .jpg");
+            }
 
-        Mandalas mandala2 = new Mandalas();
-        mandala2.Flower(center, width, height);
-
-        Mandalas mandala3 = new Mandalas();
-        
-
-
-
+            int width = 800;
+            int height = 800;
+            using var image = new Image<Rgba32>(width, height, Color.White);
+            PointF center = new PointF(width / 2, height / 2);
+            
+            Mandalas mandala1 = new Mandalas();
+            mandala1.Flower(image, center, width, height);
+            image.Save(o.FileName);
+            Console.WriteLine($"Mandala {o.FileName} generated");
+      });
     }
-
 }
 class Mandalas
-{
-    public void FirstImplementation(PointF center, int width, int height)
+{    
+    public void Flower(Image image,PointF center, int width, int height)
     {
-        using var image = new Image<Rgba32>(width, height, Color.White);
-        int circleCount = 20;
-        int segmentCount = 12;
-        float maxRadius = Math.Min(width, height) / 2 - 10;
-
-        for (int i = 1; i <= circleCount; i++)
-        {
-            float radius = (maxRadius / circleCount) * i; 
-
-    
-            var pen = Pens.Solid(Color.FromRgb((byte)(i * 20), 100, 200), 2);
-            image.Mutate(ctx => ctx.Draw(pen, new EllipsePolygon(center, radius)));
-
-            for (int j = 0; j < segmentCount; j++)
-            {
-                
-                double angle = (Math.PI * 2 / segmentCount) * j;
-            
-                PointF start = new PointF(
-                    center.X + (float)(radius * Math.Cos(angle)),
-                    center.Y + (float)(radius * Math.Sin(angle))
-                );
-                PointF end = new PointF(
-                    center.X + (float)(maxRadius * Math.Cos(angle)),
-                    center.Y + (float)(maxRadius * Math.Sin(angle))
-                );
-                // Crear la geometría de la línea
-                var pathBuilder = new PathBuilder();
-                pathBuilder.AddLine(start, end);
-                IPath line = pathBuilder.Build();
-                image.Mutate(ctx => ctx.Draw(pen, line));   //Dibujar
-            }
-        }
-        image.Save("first.png");
-        Console.WriteLine("Mandala first.png generated");
-        //Process.Start(new ProcessStartInfo("first.png") { UseShellExecute = true });
-    }
-    
-    public void Flower(PointF center, int width, int height)
-    {
-        int hexaCount = 4;
-        using var image = new Image<Rgba32>(width, height, Color.White);
+        int hexaCount = 8;
+        int segmentCount = 24;
         float maxRadius = Math.Min(width, height) / 2 - 10;
         var points = new PointF[6];
+        float startradius = maxRadius / hexaCount;
+        image.Mutate(ctx => ctx.Fill(Color.HotPink, new EllipsePolygon(center, 20)));
+        for (int j = 0; j < segmentCount; j++)
+        {
+            var pen = Pens.Solid(Color.FromRgb((byte)(j * 20), 100, 200), 2);
+            double angle = (Math.PI * 2 / segmentCount) * j;
+        
+            PointF start = new PointF(
+                center.X + (float)(startradius * Math.Cos(angle)),
+                center.Y + (float)(startradius * Math.Sin(angle))
+            );
+            PointF end = new PointF(
+                center.X + (float)(maxRadius * Math.Cos(angle)),
+                center.Y + (float)(maxRadius * Math.Sin(angle))
+            );
+            // Crear la geometría de la línea
+            var pathBuilder = new PathBuilder();
+            pathBuilder.AddLine(start, end);
+            IPath line = pathBuilder.Build();
+            image.Mutate(ctx => ctx.Draw(pen, line));   //Dibujar
+        }
         for (int i = 1; i <= hexaCount; i++)
         {
-            
             float radius = (maxRadius / hexaCount) * i; 
-            float smallradius = radius * (float)(1 / Math.Sqrt(2));
-            //Genera Hexagono
-            for (int j = 0; j < 6; j++)
-            {
-                float angle = (float)(j * Math.PI / 3); // 60 grados
-                points[j] = new PointF(center.X + radius * (float)Math.Cos(angle), center.Y + radius * (float)Math.Sin(angle));
-            }
-            image.Mutate(ctx => ctx.DrawPolygon(Color.Black, 3, points));
-            image.Mutate(ctx => 
-            {
-                for (int i = 1; i <= hexaCount; i++)
-                {
-                    float radius = (maxRadius / hexaCount) * i; 
-                    var points = new PointF[6];
-                    for (int j = 0; j < 6; j++)
-                    {
-                        float angle = (float)(j * Math.PI / 3); // 60 grados para hexágonos
-                        points[j] = new PointF(
-                            center.X + radius * (float)Math.Cos(angle),
-                            center.Y + radius * (float)Math.Sin(angle)
-                        );
-                    }
-                    float angleOfRotation = (float)(Math.PI / 2); // 90 grados en radianes
-                    for (int j = 0; j < 6; j++)
-                    {
-                        float x = points[j].X;
-                        float y = points[j].Y;
-
-                        points[j] = new PointF(
-                            center.X + (x - center.X) * (float)Math.Cos(angleOfRotation) - (y - center.Y) * (float)Math.Sin(angleOfRotation),
-                            center.Y + (x - center.X) * (float)Math.Sin(angleOfRotation) + (y - center.Y) * (float)Math.Cos(angleOfRotation)
-                        );
-                    }
-                    ctx.DrawPolygon(Color.Black, 3, points);
-                }
-            });
+            points = GenerateHex(image, center, radius, 0);
+            image.Mutate(ctx => ctx.DrawPolygon(Color.FromRgb((byte)(i * 40), 100, 200), 3, points));
         }
-        image.Save("flower.png");
-        Console.WriteLine("Mandala flower.png generated");
-        Process.Start(new ProcessStartInfo("flower.png") { UseShellExecute = true });
+        
+        for (int i = 1; i <= hexaCount; i++)
+        {
+            float radius = (maxRadius / hexaCount) * i; 
+            points = GenerateHex(image, center, radius,  MathF.PI / 4);
+            image.Mutate(ctx => ctx.DrawPolygon(Color.FromRgb((byte)(i * 40), 200, 100), 3, points));
+        }
+        for (int i = 1; i <= hexaCount; i++)
+        {
+            float radius = (maxRadius / hexaCount) * i; 
+            points = GenerateHex(image, center, radius,  MathF.PI / 2);
+            image.Mutate(ctx => ctx.DrawPolygon(Color.FromRgb((byte)(i * 40), 100, 200), 3, points));
+        }
+        for (int i = 1; i <= hexaCount; i++)
+        {
+            float radius = (maxRadius / hexaCount) * i; 
+            points = GenerateHex(image, center, radius,  -MathF.PI/4);
+            image.Mutate(ctx => ctx.DrawPolygon(Color.FromRgb((byte)(i * 40), 200, 100), 3, points));
+        }
     }
-    
+    public PointF[] GenerateHex(Image image, PointF center, float radius, float rotationAngle)
+    {
+        var points = new PointF[6];
+        for (int j = 0; j < 6; j++)
+        {
+            float angle = (float)(j * Math.PI / 3); // 60 grados
+            points[j] = new PointF(center.X + radius * (float)Math.Cos(angle), center.Y + radius * (float)Math.Sin(angle));
+            float x = center.X + radius * MathF.Cos(angle);
+            float y = center.Y + radius * MathF.Sin(angle);
+            if(rotationAngle != 0)
+            {
+                points[j] = new PointF(
+                center.X + (x - center.X) * MathF.Cos(rotationAngle) - (y - center.Y) * MathF.Sin(rotationAngle),
+                center.Y + (x - center.X) * MathF.Sin(rotationAngle) + (y - center.Y) * MathF.Cos(rotationAngle));
+            }
+        }
+        return points;
+    }
 }
