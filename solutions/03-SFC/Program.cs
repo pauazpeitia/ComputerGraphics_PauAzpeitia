@@ -1,6 +1,5 @@
 ﻿using CommandLine;
-using System.Diagnostics;
-using System.Reflection.Metadata;
+using System.Globalization;
 using System.Xml;
 
 namespace _03_SFC;
@@ -46,7 +45,8 @@ class Program
           case 1:
             Console.WriteLine("Hilbert Curve"); 
             Hilbert hilbert = new();
-            hilbert.HilbertFuncion(svgDoc, initialGroup, size/2, size/2, size, order, 0, o.Color);
+            double decimalsize = (double)size;
+            hilbert.HilbertFuncion(svgDoc, initialGroup, decimalsize/2, decimalsize/2, decimalsize, order, 0, o.Color);
             svgDoc.DocumentElement.AppendChild(initialGroup);
             svgDoc.Save(o.FileName);
             Console.WriteLine($"File saved as {o.FileName}");
@@ -93,7 +93,6 @@ class Program
           
           default:
             throw new ArgumentException("Choose a valid mode (between 1-3)");
-            break;
         }
       });
   }
@@ -101,13 +100,12 @@ class Program
 }
 class Hilbert
 {
-  public void HilbertFuncion(XmlDocument svgDoc, XmlElement parentGroup, int cx, int cy ,int size, int order, int angle, int numcolor)
+  public void HilbertFuncion(XmlDocument svgDoc, XmlElement parentGroup, double cx, double cy ,double size, int order, int angle, int numcolor)
   {
     XmlElement group = svgDoc.CreateElement("g");
-    group.SetAttribute("transform", $"translate({cx}, {cy}) rotate({angle})");
+    group.SetAttribute("transform", $"translate({cx.ToString(CultureInfo.InvariantCulture)}, {cy.ToString(CultureInfo.InvariantCulture)}) rotate({angle})");
     ColorRandomizer ran = new(numcolor);
-    string color = ran.GetRandomColor();
-
+    string color = ran.GetRandomColor(); 
     if(order > 1)
     {
       HilbertFuncion(svgDoc, group, -(size / 4), -(size / 4), size / 2, order - 1, 0, numcolor);
@@ -118,32 +116,31 @@ class Hilbert
 
     int n = (int)Math.Pow(2, order +1); //key
     
-    
     XmlElement line1 = svgDoc.CreateElement("line");
-    line1.SetAttribute("x1", $"-{(size/2 - size/n).ToString()}"); 
-    line1.SetAttribute("y1", $"-{(size/n).ToString()}"); 
-    line1.SetAttribute("x2", $"-{(size/2 - size/n).ToString()}"); 
-    line1.SetAttribute("y2", $"{(size/n).ToString()}"); 
+    line1.SetAttribute("x1", $"-{(size/2 - size/n).ToString(CultureInfo.InvariantCulture)}"); 
+    line1.SetAttribute("y1", $"-{(size/n).ToString(CultureInfo.InvariantCulture)}"); 
+    line1.SetAttribute("x2", $"-{(size/2 - size/n).ToString(CultureInfo.InvariantCulture)}"); 
+    line1.SetAttribute("y2", $"{(size/n).ToString(CultureInfo.InvariantCulture)}"); 
     line1.SetAttribute("stroke", color); 
-    line1.SetAttribute("stroke-width", "2");
+    line1.SetAttribute("stroke-width", "3");
     group.AppendChild(line1);
     
     XmlElement line2 = svgDoc.CreateElement("line");
-    line2.SetAttribute("x1", $"-{(size/n).ToString()}"); 
-    line2.SetAttribute("y1", $"-{(size/n).ToString()}"); 
-    line2.SetAttribute("x2", $"{(size/n).ToString()}"); 
-    line2.SetAttribute("y2", $"-{(size/n).ToString()}"); 
-    line2.SetAttribute("stroke", color);
-    line2.SetAttribute("stroke-width", "2"); 
+    line2.SetAttribute("x1", $"-{(size/n).ToString(CultureInfo.InvariantCulture)}"); 
+    line2.SetAttribute("y1", $"-{(size/n).ToString(CultureInfo.InvariantCulture)}"); 
+    line2.SetAttribute("x2", $"{(size/n).ToString(CultureInfo.InvariantCulture)}"); 
+    line2.SetAttribute("y2", $"-{(size/n).ToString(CultureInfo.InvariantCulture)}"); 
+    line2.SetAttribute("stroke", color); 
+    line2.SetAttribute("stroke-width", "3"); 
     group.AppendChild(line2);
     
     XmlElement line3 = svgDoc.CreateElement("line");
-    line3.SetAttribute("x1", $"{(size/2 - size/n).ToString()}"); 
-    line3.SetAttribute("y1", $"-{(size/n).ToString()}"); 
-    line3.SetAttribute("x2", $"{(size/2 - size/n).ToString()}"); 
-    line3.SetAttribute("y2", $"{(size/n).ToString()}"); 
+    line3.SetAttribute("x1", $"{(size/2 - size/n).ToString(CultureInfo.InvariantCulture)}"); 
+    line3.SetAttribute("y1", $"-{(size/n).ToString(CultureInfo.InvariantCulture)}"); 
+    line3.SetAttribute("x2", $"{(size/2 - size/n).ToString(CultureInfo.InvariantCulture)}"); 
+    line3.SetAttribute("y2", $"{(size/n).ToString(CultureInfo.InvariantCulture)}"); 
     line3.SetAttribute("stroke", color);
-    line3.SetAttribute("stroke-width", "2");
+    line3.SetAttribute("stroke-width", "3");
     group.AppendChild(line3);
     //Guardar
     parentGroup.AppendChild(group);
