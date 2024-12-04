@@ -114,7 +114,7 @@ class Hilbert
       HilbertFuncion(svgDoc, group, size / 4, size / 4, size / 2, order - 1, -90, numcolor);
     }
 
-    int n = (int)Math.Pow(2, order +1); //key
+    int n = (int)Math.Pow(2, order +1); 
     
     XmlElement line1 = svgDoc.CreateElement("line");
     line1.SetAttribute("x1", $"-{(size/2 - size/n).ToString(CultureInfo.InvariantCulture)}"); 
