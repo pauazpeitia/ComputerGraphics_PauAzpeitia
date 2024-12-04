@@ -22,7 +22,7 @@ public class Options
   [Option('c', "mode", Required = true, HelpText = "Choose curve (1,2,3).")]
   public int Mode { get; set; }
 
-  [Option('t', "tone", Required = false, Default = 1, HelpText = "Choose color set (1-11).")]
+  [Option('t', "tone", Required = false, Default = 1, HelpText = "Choose color set (1-8).")]
   public int Color { get; set; } = 1;
 }
 
@@ -33,6 +33,10 @@ class Program
     Parser.Default.ParseArguments<Options>(args)
       .WithParsed<Options>(o =>
       {
+        if(!o.OutputFileName.EndsWith(".svg"))
+        {
+          throw new ArgumentException("Name of the output file should have the extension .svg");
+        }
         ColorRandomizer color = new ColorRandomizer(o.Color);
 
         int size = Math.Max(Math.Min(o.Width, o.Height) - 10, 5); 
@@ -117,7 +121,6 @@ class Hilbert
     }
 
     int n = (int)Math.Pow(2, order +1); //key
-    
     
     XmlElement line1 = svgDoc.CreateElement("line");
     line1.SetAttribute("x1", $"-{(size/2 - size/n).ToString()}"); 
@@ -228,7 +231,7 @@ class ColorRandomizer
           Colors = new string[] { "#FF6347", "#FFD700", "#ADFF2F" };  
           break;
       default:
-          throw new ArgumentException("Número de color no válido.");
+          throw new ArgumentException("Number of color not valid.");
       }
   }
 

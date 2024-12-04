@@ -13,7 +13,7 @@ public class Options
   public string OutputFileName { get; set; } = string.Empty;
   [Option('i', "input", Required = true, HelpText = "Input image file-name.")]
   public string InputFileName { get; set; }
-  [Option('c', "colors", Required = false, Default = 4, HelpText = "Desired number of colors.")]
+  [Option('c', "colors", Required = true, HelpText = "Desired number of colors.")]
   public int NumberofColors { get; set; }
 }
 
@@ -30,18 +30,52 @@ class Program
         // Lista para almacenar los colores en espacio HSV
         List<Hsv> hsvPixels = new List<Hsv>();
 
-        foreach (var pixel in image.GetPixelSpan())
+        for (int y = 0; y < image.Height; y++)
         {
-          var hsv = Rgba32ToHsv(pixel);
-          hsvPixels.Add(hsv);
+          for (int x = 0; x < image.Width; x++)
+          {
+              var pixel = image[x, y];
+              var hsv = Rgba32ToHsv(pixel);
+              hsvPixels.Add(hsv);
+          }
         }
+
+
         //Aplicar algorithmo
         var clusters = KMeansCluster(hsvPixels, o.NumberofColors);
+        // Convertir clusters a RGB
+        var rgbColors = clusters.Select(HsvToRgba32).ToList();
 
-
+        if (string.IsNullOrEmpty(o.OutputFileName))
+        {
+            // Devolver colores como texto en formato RGB
+            foreach (var color in rgbColors)
+            {
+                Console.WriteLine($"RGB({color.R}, {color.G}, {color.B})");
+            }
+        }
+        else
+        {
+            // Generar archivo SVG
+            GenerateSvg(o.OutputFileName, rgbColors);
+            Console.WriteLine($"Palette saved to {o.OutputFileName}");
+        }
       });
   }
 
+  public struct Hsv
+  {
+    public float H { get; }
+    public float S { get; }
+    public float V { get; }
+
+    public Hsv(float h, float s, float v)
+    {
+        H = h;
+        S = s;
+        V = v;
+    }
+  }
 
   static Hsv Rgba32ToHsv(Rgba32 rgba)
   {
@@ -105,19 +139,7 @@ class Program
 
       return new Rgba32((byte)(r * 255), (byte)(g * 255), (byte)(b * 255));
   }
-  public struct Hsv
-  {
-    public float H { get; }
-    public float S { get; }
-    public float V { get; }
-
-    public Hsv(float h, float s, float v)
-    {
-        H = h;
-        S = s;
-        V = v;
-    }
-  }
+  
   //Algorithmo K-means cluster
   static List<Hsv> KMeansCluster(List<Hsv> colors, int k)
   {
@@ -185,6 +207,31 @@ class Program
     float avgS = colors.Average(c => c.S);
     float avgV = colors.Average(c => c.V);
     return new Hsv(avgH, avgS, avgV);
+  }
+  static void GenerateSvg(string outputFileName, List<Rgba32> colors)
+  {
+    using (XmlWriter writer = XmlWriter.Create(outputFileName, new XmlWriterSettings { Indent = true }))
+    {
+        writer.WriteStartDocument();
+        writer.WriteStartElement("svg", "http://www.w3.org/2000/svg");
+        writer.WriteAttributeString("width", "100");
+        writer.WriteAttributeString("height", (50 * colors.Count).ToString());
+
+        for (int i = 0; i < colors.Count; i++)
+        {
+            var color = colors[i];
+            writer.WriteStartElement("rect");
+            writer.WriteAttributeString("x", "0");
+            writer.WriteAttributeString("y", (i * 50).ToString());
+            writer.WriteAttributeString("width", "100");
+            writer.WriteAttributeString("height", "50");
+            writer.WriteAttributeString("fill", $"rgb({color.R},{color.G},{color.B})");
+            writer.WriteEndElement();
+        }
+
+        writer.WriteEndElement();
+        writer.WriteEndDocument();
+    }
   }
 
 }
