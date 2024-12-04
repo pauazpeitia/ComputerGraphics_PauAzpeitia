@@ -1,4 +1,4 @@
-using SixLabors.ImageSharp;
+﻿using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
@@ -20,7 +20,7 @@ class Program
         Parser.Default.ParseArguments<Options>(args)
       .WithParsed<Options>(o =>
       {
-            if(!o.FileName.EndsWith(".png") || !o.FileName.EndsWith(".jpg"))
+            if(!(o.FileName.EndsWith(".png") || o.FileName.EndsWith(".jpg")))
             {
                 throw new ArgumentException("Name of the output file should have the extension .png or .jpg");
             }
@@ -49,7 +49,7 @@ class Mandalas
         image.Mutate(ctx => ctx.Fill(Color.HotPink, new EllipsePolygon(center, 20)));
         for (int j = 0; j < segmentCount; j++)
         {
-            var pen = Pens.Solid(Color.FromRgb((byte)(j * 20), 100, 200), 2);
+            var pen = Pens.Solid(Color.FromRgb((byte)(j * 20), 100, 200), 3);
             double angle = (Math.PI * 2 / segmentCount) * j;
         
             PointF start = new PointF(
@@ -60,7 +60,7 @@ class Mandalas
                 center.X + (float)(maxRadius * Math.Cos(angle)),
                 center.Y + (float)(maxRadius * Math.Sin(angle))
             );
-            // Crear la geometría de la línea
+            
             var pathBuilder = new PathBuilder();
             pathBuilder.AddLine(start, end);
             IPath line = pathBuilder.Build();
