@@ -27,76 +27,65 @@ public class Options
 
 class Program
 {
-  static void Main(string[] args)
+ static void Main(string[] args)
   {
-    Parser.Default.ParseArguments<Options>(args)
-      .WithParsed<Options>(o =>
-      {
-        ColorRandomizer color = new ColorRandomizer(o.Color);
-
-        int size = Math.Max(Math.Min(o.Width, o.Height) - 10, 5); 
-        int order = o.Order;
-        SVGHandler handler = new();
-        XmlDocument svgDoc = handler.CreateSvg(size.ToString());
-        handler.Contorno(svgDoc, size.ToString());
-        XmlElement initialGroup = svgDoc.CreateElement("g");
-        switch(o.Mode)
+      Parser.Default.ParseArguments<Options>(args)
+        .WithParsed<Options>(o =>
         {
-          case 1:
-            Console.WriteLine("Hilbert Curve"); 
-            Hilbert hilbert = new();
-            double decimalsize = (double)size;
-            hilbert.HilbertFuncion(svgDoc, initialGroup, decimalsize/2, decimalsize/2, decimalsize, order, 0, o.Color);
-            svgDoc.DocumentElement.AppendChild(initialGroup);
-            svgDoc.Save(o.FileName);
-            Console.WriteLine($"File saved as {o.FileName}");
-            return;
-          case 2:
-            Console.WriteLine("Dragon Curve");
-            Dragon dragon = new();
+          ColorRandomizer color = new ColorRandomizer(o.Color);
 
-            
-            int centerX = size / 2;
-            int centerY = size / 2;
-            int length = size / 4; 
+          int size = Math.Max(Math.Min(o.Width, o.Height) - 10, 5); 
+          int order = o.Order;
+          SVGHandler handler = new();
+          XmlDocument svgDoc = handler.CreateSvg(size.ToString());
+          handler.Contorno(svgDoc, size.ToString());
+          XmlElement initialGroup = svgDoc.CreateElement("g");
 
-            
-            int x0 = centerX - length / 2;
-            int y0 = centerY;
-            int x1 = centerX + length / 2;
-            int y1 = centerY;
+          double centerX = size / 2.0;
+          double centerY = size / 2.0;
 
-            
-            dragon.DragonCurve(svgDoc, initialGroup, x0, y0, x1, y1, order, o.Color);
-
-            svgDoc.DocumentElement.AppendChild(initialGroup);
-            svgDoc.Save(o.FileName);
-            Console.WriteLine($"File saved as {o.FileName}");
-            return;
-          case 3:
-            Console.WriteLine("Sierpinski Curve");
-            Sierpinski sierpinski = new();
-            
-            int x0Sierpinski = size / 2;
-            int y0Sierpinski = 10;
-            int x1Sierpinski = 10;
-            int y1Sierpinski = size - 10;
-            int x2Sierpinski = size - 10;
-            int y2Sierpinski = size - 10;
-
-            sierpinski.SierpinskiCurve(svgDoc, initialGroup, x0Sierpinski, y0Sierpinski, x1Sierpinski, y1Sierpinski, x2Sierpinski, y2Sierpinski, order, "black", o.Color);
-            svgDoc.DocumentElement.AppendChild(initialGroup);
-            svgDoc.Save(o.FileName);
-            Console.WriteLine($"File saved as {o.FileName}");
-            return;
-        
-          
-          default:
-            throw new ArgumentException("Choose a valid mode (between 1-3)");
-        }
-      });
+          switch(o.Mode)
+          {
+            case 1:
+              Console.WriteLine("Hilbert Curve"); 
+              Hilbert hilbert = new();
+              hilbert.HilbertFuncion(svgDoc, initialGroup, centerX, centerY, size, order, 0, o.Color);
+              svgDoc.DocumentElement.AppendChild(initialGroup);
+              svgDoc.Save(o.FileName);
+              Console.WriteLine($"File saved as {o.FileName}");
+              return;
+            case 2:
+              Console.WriteLine("Dragon Curve");
+              Dragon dragon = new();
+              int length = size / 4; 
+              int x0 = (int)(centerX - length / 2);
+              int y0 = (int)centerY;
+              int x1 = (int)(centerX + length / 2);
+              int y1 = (int)centerY;
+              dragon.HearthFunction(svgDoc, initialGroup, x0, y0, x1, y1, order, o.Color);
+              svgDoc.DocumentElement.AppendChild(initialGroup);
+              svgDoc.Save(o.FileName);
+              Console.WriteLine($"File saved as {o.FileName}");
+              return;
+            case 3:
+              Console.WriteLine("Sierpinski Curve");
+              Sierpinski sierpinski = new();
+              int x0Sierpinski = size / 2;
+              int y0Sierpinski = 10;
+              int x1Sierpinski = 10;
+              int y1Sierpinski = size - 10;
+              int x2Sierpinski = size - 10;
+              int y2Sierpinski = size - 10;
+              sierpinski.SierpinskiCurve(svgDoc, initialGroup, x0Sierpinski, y0Sierpinski, x1Sierpinski, y1Sierpinski, x2Sierpinski, y2Sierpinski, order, "black", o.Color);
+              svgDoc.DocumentElement.AppendChild(initialGroup);
+              svgDoc.Save(o.FileName);
+              Console.WriteLine($"File saved as {o.FileName}");
+              return;
+            default:
+              throw new ArgumentException("Choose a valid mode (between 1-3)");
+          }
+        });
   }
-
 }
 class Hilbert
 {
@@ -239,7 +228,7 @@ class ColorRandomizer
 
 class Dragon
 {
-  public void DragonCurve(XmlDocument svgDoc, XmlElement parentGroup, int x0, int y0, int x1, int y1, int iterations, int numcolor)
+  public void HearthFunction(XmlDocument svgDoc, XmlElement parentGroup, int x0, int y0, int x1, int y1, int iterations, int numcolor)
   {
     ColorRandomizer ran = new(numcolor);
     string color = ran.GetRandomColor();
@@ -260,8 +249,8 @@ class Dragon
       int midX = (x0 + x1) / 2 - (y1 - y0) / 2;
       int midY = (y0 + y1) / 2 + (x1 - x0) / 2;
 
-      DragonCurve(svgDoc, parentGroup, x0, y0, midX, midY, iterations - 1, numcolor);
-      DragonCurve(svgDoc, parentGroup, midX, midY, x1, y1, iterations - 1, numcolor);
+      HearthFunction(svgDoc, parentGroup, x0, y0, midX, midY, iterations - 1, numcolor);
+      HearthFunction(svgDoc, parentGroup, midX, midY, x1, y1, iterations - 1, numcolor);
     }
   }
 }
