@@ -21,7 +21,7 @@ public class Options
   [Option('c', "mode", Required = true, HelpText = "Choose curve (1,2,3).")]
   public int Mode { get; set; }
 
-  [Option('t', "tone", Required = false, Default = 1, HelpText = "Choose color set (1-11).")]
+  [Option('t', "tone", Required = false, Default = 1, HelpText = "Choose color set (1-8).")]
   public int Color { get; set; } = 1;
 }
 
@@ -55,14 +55,14 @@ class Program
               Console.WriteLine($"File saved as {o.FileName}");
               return;
             case 2:
-              Console.WriteLine("Dragon Curve");
-              Dragon dragon = new();
+              Console.WriteLine("Hearth Curve");
+              Hearth hearth = new();
               int length = size / 4; 
               int x0 = (int)(centerX - length / 2);
               int y0 = (int)centerY;
               int x1 = (int)(centerX + length / 2);
               int y1 = (int)centerY;
-              dragon.HearthFunction(svgDoc, initialGroup, x0, y0, x1, y1, order, o.Color);
+              hearth.HearthFunction(svgDoc, initialGroup, x0, y0, x1, y1, order, o.Color);
               svgDoc.DocumentElement.AppendChild(initialGroup);
               svgDoc.Save(o.FileName);
               Console.WriteLine($"File saved as {o.FileName}");
@@ -77,6 +77,14 @@ class Program
               int x2Sierpinski = size - 10;
               int y2Sierpinski = size - 10;
               sierpinski.SierpinskiCurve(svgDoc, initialGroup, x0Sierpinski, y0Sierpinski, x1Sierpinski, y1Sierpinski, x2Sierpinski, y2Sierpinski, order, "black", o.Color);
+              svgDoc.DocumentElement.AppendChild(initialGroup);
+              svgDoc.Save(o.FileName);
+              Console.WriteLine($"File saved as {o.FileName}");
+              return;
+            case 4:
+              Console.WriteLine("Dragon Curve");
+              Dragon dragon = new();
+              dragon.DrawDragonCurve(svgDoc, initialGroup, o.Width, o.Height, order, o.Color);
               svgDoc.DocumentElement.AppendChild(initialGroup);
               svgDoc.Save(o.FileName);
               Console.WriteLine($"File saved as {o.FileName}");
@@ -131,7 +139,6 @@ class Hilbert
     line3.SetAttribute("stroke", color);
     line3.SetAttribute("stroke-width", "3");
     group.AppendChild(line3);
-    //Guardar
     parentGroup.AppendChild(group);
   }
 }
@@ -226,7 +233,7 @@ class ColorRandomizer
   }
 }
 
-class Dragon
+class Hearth
 {
   public void HearthFunction(XmlDocument svgDoc, XmlElement parentGroup, int x0, int y0, int x1, int y1, int iterations, int numcolor)
   {
@@ -254,6 +261,66 @@ class Dragon
     }
   }
 }
+class Dragon
+{
+    public void DrawDragonCurve(XmlDocument doc, XmlElement root, int width, int height, int depth, int numcolor)
+{
+    ColorRandomizer ran = new(numcolor);
+    string color = ran.GetRandomColor();
+    int size = Math.Min(width, height);  
+    double scale = size / Math.Pow(2, depth / 2.0)/2.5;  
+    double x = width / 2, y = height / 2;  
+    XmlElement group = doc.CreateElement("g");
+    root.AppendChild(group);
+
+    string sequence = GenerateDragonSequence(depth); 
+    double angle = 0;  
+
+    double minX = x, maxX = x, minY = y, maxY = y;
+    foreach (char turn in sequence)
+    {
+        color = ran.GetRandomColor();
+        double dx = Math.Cos(angle) * scale; 
+        double dy = Math.Sin(angle) * scale;  
+        DrawLineD(group, doc, x, y, x + dx, y + dy, color);  
+
+        x += dx;
+        y += dy;
+        minX = Math.Min(minX, x);
+        maxX = Math.Max(maxX, x);
+        minY = Math.Min(minY, y);
+        maxY = Math.Max(maxY, y);
+
+        angle += (turn == 'R' ? Math.PI / 2 : -Math.PI / 2); 
+    }
+    double offsetX = (width - (maxX - minX)) / 2 - minX;
+    double offsetY = (height - (maxY - minY)) / 2 - minY;
+    group.SetAttribute("transform", $"translate({offsetX}, {offsetY})"); 
+}
+  static void DrawLineD(XmlElement group, XmlDocument doc, double x1, double y1, double x2, double y2, string color)
+  {
+      XmlElement line = doc.CreateElement("line");
+      line.SetAttribute("x1", x1.ToString(CultureInfo.InvariantCulture));
+      line.SetAttribute("y1", y1.ToString(CultureInfo.InvariantCulture));
+      line.SetAttribute("x2", x2.ToString(CultureInfo.InvariantCulture));
+      line.SetAttribute("y2", y2.ToString(CultureInfo.InvariantCulture));
+      line.SetAttribute("stroke", color);
+      line.SetAttribute("stroke-width", "2");
+      group.AppendChild(line);
+  }
+    
+    static string GenerateDragonSequence(int depth)
+    {
+        string sequence = "R"; 
+        for (int i = 1; i < depth; i++)
+        {
+            string complement = new string(sequence.Reverse().Select(c => c == 'R' ? 'L' : 'R').ToArray()); 
+            sequence += "R" + complement;  
+        }
+        return sequence;
+    }   
+}
+
 class SVGHandler
   {
   public XmlDocument CreateSvg(string size)
