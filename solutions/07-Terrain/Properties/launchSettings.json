@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "07-Terrain": {
-      "commandName": "Project",
-      "commandLineArgs": "-t logo340x340w.png",
-      "workingDirectory": "$(ProjectDir)"
-    }
-  }
-}
