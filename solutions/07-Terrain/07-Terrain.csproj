@@ -3,15 +3,16 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>_08_Fireworks</RootNamespace>
+    <RootNamespace>_07_terrain</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="fireworks-KiLi.png" />
+    <None Remove="diamond-square-diagram.png" />
     <None Remove="Silk\placeholder" />
+    <None Remove="terrain-screenshot.jpg" />
   </ItemGroup>
 
   <ItemGroup>
