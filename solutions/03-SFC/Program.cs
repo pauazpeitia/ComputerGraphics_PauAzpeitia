@@ -18,7 +18,7 @@ public class Options
   [Option('d', "recursion depth", Required = false, Default = 1, HelpText = "Order of the Curve.")]
   public int Order { get; set; } = 1;
 
-  [Option('c', "mode", Required = true, HelpText = "Choose curve (1,2,3).")]
+  [Option('c', "mode", Required = true, HelpText = "Choose curve (1,2,3,4).")]
   public int Mode { get; set; }
 
   [Option('t', "tone", Required = false, Default = 1, HelpText = "Choose color set (1-8).")]
@@ -263,8 +263,8 @@ class Hearth
 }
 class Dragon
 {
-    public void DrawDragonCurve(XmlDocument doc, XmlElement root, int width, int height, int depth, int numcolor)
-{
+  public void DrawDragonCurve(XmlDocument doc, XmlElement root, int width, int height, int depth, int numcolor)
+  {
     ColorRandomizer ran = new(numcolor);
     string color = ran.GetRandomColor();
     int size = Math.Min(width, height);  
@@ -296,7 +296,7 @@ class Dragon
     double offsetX = (width - (maxX - minX)) / 2 - minX;
     double offsetY = (height - (maxY - minY)) / 2 - minY;
     group.SetAttribute("transform", $"translate({offsetX}, {offsetY})"); 
-}
+  }
   static void DrawLineD(XmlElement group, XmlDocument doc, double x1, double y1, double x2, double y2, string color)
   {
       XmlElement line = doc.CreateElement("line");
