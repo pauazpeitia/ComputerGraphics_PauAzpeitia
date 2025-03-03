@@ -281,14 +281,14 @@ namespace _08_Fireworks
                 case Key.Up:
                     if (sim != null)
                     {
-                        sim.FirweorkParticleRate *= 1.1;
+                        sim.FirweorkParticleRate *= 2;
                         SetWindowTitle();
                     }
                     break;
                 case Key.Down:
                     if (sim != null)
                     {
-                        sim.FirweorkParticleRate /= 1.1;
+                        sim.FirweorkParticleRate /= 2;
                         SetWindowTitle();
                     }
                     break;

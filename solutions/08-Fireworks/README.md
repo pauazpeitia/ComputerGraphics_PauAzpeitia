@@ -24,8 +24,16 @@ class FirweorkParticle:
   Launching new rockets: Finally, the method checks if it is the right time to launch a new rocket (If the current time is greater than or equal to the scheduled launch time (nextRocketLaunchTime)).  If the number of rockets set in the group (RocketsPerPop) has been launched, it waits for an interval before launching more. If not enough have been launched, another rocket is launched at the default interval (PopInterval).
 
   In Program.cs the OnLoad:  It initializes the particle system (FireworkSystem), loads the OpenGL shaders, and configures the camera (trackball). OnRender: The particle system is simulated up to the current time (sim.SimulateTo(nowSeconds)).Load the generated particles into the vertex buffer.The shader program and uniform variables, such as view matrix, projection, and lighting, are set. Finally, the particles are drawn using Gl.DrawArrays.
+
 ## Extra work / Bonuses
--
+-Multiple rocket/particle types:
+In the code, different particle modes are handled (Mode = 0, Mode = 1, Mode = 2), there are different particle types (rockets, primary explosions, and secondary explosions). 
+-Multi-stage explosions:
+The particle system handles secondary explosions (secondaryExplosions), there is a second stage of explosions after the initial explosion.
+-Color/point-size changes during life of a particle/rocket:
+In the SimulateTo method of the FirweorkParticle class, the color and size of the particles are adjusted according to their lifetime (lifeFactor). This fulfills the requirement of color and size changes during the lifetime of the particles. In addition, the initial rocket (mode 0) increases its size to be visible at the moment it is launched, and then shrinks to give way and importance to the explosion itself. (also "Visualization of rocket trajectories" criterion)
+-Interactive fireworks control:
+In the Program.cs file, user interaction is handled via the keyboard (e.g., Up, Down, R keys,...), which allows controlling the particle generation rate and restarting the simulation.
 
 ## Use of AI
 -This task has been really difficult for my current programming skills with C# and OpenGl. I needed in many times the help of an artificial intelligence, which has guided me in the development of both classes and the OnLoad, OnRender structure.
