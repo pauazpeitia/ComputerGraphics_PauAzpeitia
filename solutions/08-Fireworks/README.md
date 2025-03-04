@@ -34,6 +34,12 @@ The particle system handles secondary explosions (secondaryExplosions), there is
 In the SimulateTo method of the FirweorkParticle class, the color and size of the particles are adjusted according to their lifetime (lifeFactor). This fulfills the requirement of color and size changes during the lifetime of the particles. In addition, the initial rocket (mode 0) increases its size to be visible at the moment it is launched, and then shrinks to give way and importance to the explosion itself. (also "Visualization of rocket trajectories" criterion)
 -Interactive fireworks control:
 In the Program.cs file, user interaction is handled via the keyboard (e.g., Up, Down, R keys,...), which allows controlling the particle generation rate and restarting the simulation.
-
+-NEW: 04/03
+  -Multiple rocket/particle types:
+    Added CreateRing funciton to simulate a ring explosion.
+  -Color/point-size changes during life of a particle/rocket:
+    Added control to the color so that each explosion has its own sense color and color interpolation.
+  -Interactive fireworks control:
+    Launch rockets with the space bar (if the maximum number of particles is not exceeded).
 ## Use of AI
 -This task has been really difficult for my current programming skills with C# and OpenGl. I needed in many times the help of an artificial intelligence, which has guided me in the development of both classes and the OnLoad, OnRender structure.

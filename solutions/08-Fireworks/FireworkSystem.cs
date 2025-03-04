@@ -20,6 +20,8 @@ namespace _08_Fireworks
             public Vector3 Draft { get; set; }
             double PopInterval = 0.3;
             static Random rand = new Random();
+            int RingFireworks = 32;
+
             public FireworkSystem(double now, double FirweorkParticleRate, int maxFirweorkParticles, int initFirweorkParticles)
             {
                 SimulatedTime = now;
@@ -41,7 +43,7 @@ namespace _08_Fireworks
                 List<int> toRemove = new();
                 List<Vector3> explosions = new();        
                 List<Vector3> secondaryExplosions = new(); 
-
+                
                 for (int i = 0; i < FirweorkParticles.Count; i++)
                 {
                     FirweorkParticle p = FirweorkParticles[i];
@@ -86,6 +88,15 @@ namespace _08_Fireworks
                         (float)(0.5 + rand.NextDouble() * 0.5),
                         (float)(0.5 + rand.NextDouble() * 0.5)
                     );
+                    if (rand.NextDouble() < 0.5)
+                    {
+                    // Ring explosion: generate ring particles.
+                        for (int j = 0; j < RingFireworks; j++)
+                        {
+                            if (FirweorkParticles.Count < MaxFirweorkParticles)
+                                FirweorkParticles.Add(FirweorkParticle.CreateRing(time, position, baseColor, j, RingFireworks));
+                        }
+                    }
                     for (int s = 0; s < flashsPerSecondaryExplosion; s++)
                     {
                         if (FirweorkParticles.Count < MaxFirweorkParticles)
@@ -121,6 +132,23 @@ namespace _08_Fireworks
             {
                 FirweorkParticles.Clear();
                 nextRocketLaunchTime = SimulatedTime;
+            }
+            public void LaunchRocket()
+            {
+                if (FirweorkParticles.Count < MaxFirweorkParticles)
+                {
+                    FirweorkParticles.Add(new FirweorkParticle(SimulatedTime));
+                    rocketsInPop++;
+                    if (rocketsInPop < RocketsPerPop)
+                    {
+                        nextRocketLaunchTime = SimulatedTime + PopInterval;
+                    }
+                    else
+                    {
+                        rocketsInPop = 0;
+                        nextRocketLaunchTime = SimulatedTime + GapBetweenPop;
+                    }
+                }
             }
         }
 }

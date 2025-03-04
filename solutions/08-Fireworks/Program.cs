@@ -53,6 +53,7 @@ namespace _08_Fireworks
         private static double nowSeconds = FPS.NowInSeconds;
         private static FireworkSystem? sim;
         private static FPS fps = new FPS();
+        const int RingFireworks = 36;
         private static string WindowTitle()
         {
             StringBuilder sb = new("08-Fireworks");
@@ -306,6 +307,14 @@ namespace _08_Fireworks
                 case Key.Escape:
                     window?.Close();
                     break;
+                case Key.Space: // Agregar este caso para la barra de espacio
+                if (sim != null)
+                {
+                    // Lanzar un cohete
+                    sim.LaunchRocket();
+                    Ut.Message("Rocket launched!");
+                }
+                break;
             }
         }
         private static void KeyUp(IKeyboard arg1, Key arg2, int arg3)

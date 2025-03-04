@@ -11,13 +11,16 @@ namespace _08_Fireworks
             public bool SecondaryExploded { get; set; } = false; 
             public Vector3 Acceleration { get; private set; }
             public Vector3 Position { get; private set; }
+            double pLifeSpan = 4;   
             const double flashLifeSpan = 15;           
             const double secondaryflashLifeSpan = 8; 
+            const double ringLifetime = 4;
             public Vector3 Color { get; private set; }
             public float Size { get; private set; }
             public double Age { get; private set; }
             private double Simulatedzeit;
-            double pLifeSpan = 4.0;           
+             
+        
             public static FirweorkParticle CreateSecondaryflash(double now, Vector3 explosionPos, Vector3 baseColor)
             {
                 FirweorkParticle p = new FirweorkParticle(now);
@@ -64,13 +67,40 @@ namespace _08_Fireworks
                 FirweorkParticle p = new FirweorkParticle(now);
                 p.Mode = 1;
                 p.Position = explosionPos;
-                p.Acceleration = new Vector3((float)rand.NextDouble()*3,(float)rand.NextDouble()*3, (float)rand.NextDouble()*3);
+                double phi = Math.Acos(2 * rand.NextDouble() - 1);
+                double theta = rand.NextDouble() * 2 * Math.PI;
+                float velocity = (float)(5.0 + rand.NextDouble() * 5.0);
+                float x = velocity * (float)(Math.Sin(phi) * Math.Cos(theta));
+                float y = velocity * (float)(Math.Sin(phi) * Math.Sin(theta));
+                float z = velocity * (float)Math.Cos(phi);
+                p.Acceleration = new Vector3(x, y, z);
                 float factor = 0.9f + (float)(rand.NextDouble() * 0.2f);
                 p.Color = new Vector3(baseColor.X * factor, baseColor.Y * factor, baseColor.Z * factor);
                 p.Size = 2f;
                 p.Age = flashLifeSpan;
                 p.Simulatedzeit = now;
                 
+                return p;
+            }
+
+            public static FirweorkParticle CreateRing(double now, Vector3 explosionPos, Vector3 baseColor, int ringIndex, int totalParticles)
+            {
+                FirweorkParticle p = new FirweorkParticle(now);
+                p.Mode = 3;
+                p.Position = explosionPos;
+                // Compute angle for ring: evenly distributed around 360°.
+                double angle = 2 * Math.PI * ringIndex / totalParticles;
+                // Set speed mainly horizontal with a small upward component.
+                float speed = 7.0f;
+                float vx = speed * (float)Math.Cos(angle);
+                float vz = speed * (float)Math.Sin(angle);
+                float vy = speed * 0.2f; // Small upward lift.
+                p.Acceleration = new Vector3(vx, vy, vz);
+                float factor = 0.9f + (float)(rand.NextDouble() * 0.2f);
+                p.Color = new Vector3(baseColor.X * factor, baseColor.Y * factor, baseColor.Z * factor);
+                p.Size = 2.5f;
+                p.Age = ringLifetime;
+                p.Simulatedzeit = now;
                 return p;
             }
             public bool SimulateTo(Vector3 wind, double zeit)
@@ -85,8 +115,8 @@ namespace _08_Fireworks
                 Vector3 acceleration = gravityforceVec + drag + wind;
                 Acceleration += acceleration * (float)dt;
                 Position += Acceleration * (float)dt;
-                float lifeFactor = (float)(Age / (Mode == 0 ? pLifeSpan : (Mode == 1 ? flashLifeSpan : (Mode == 2 ? secondaryflashLifeSpan : secondaryflashLifeSpan))));
-                if (Mode != 0) Color *= lifeFactor;
+                float lifeFactor = (float)(Age / (Mode == 0 ? pLifeSpan : (Mode == 1 ? flashLifeSpan : (Mode == 2 ? secondaryflashLifeSpan : ringLifetime))));
+                if (Mode != 0) Color *= lifeFactor; //Color Interpolation
                 Size *= lifeFactor;
                 return true;
             }
