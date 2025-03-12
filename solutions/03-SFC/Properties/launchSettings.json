@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "03-SFC": {
-      "commandName": "Project",
-      "commandLineArgs": "-w 600 -h 400 -o output.svg",
-      "workingDirectory": "$(ProjectDir)"
-    }
-  }
-}

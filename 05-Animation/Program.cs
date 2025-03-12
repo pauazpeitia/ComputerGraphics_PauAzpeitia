@@ -1,63 +1,187 @@
-﻿using CommandLine;
+﻿using System;                      
+using System.IO;                   
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing;
+using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp.Drawing.Processing;
-
-namespace _05_Animation;
+using CommandLine;
 
 public class Options
 {
-  [Option('w', "width", Required = true, HelpText = "Image width in pixels.")]
-  public int Width { get; set; }
+  [Option('w', "width", Required = false, Default = 800, HelpText = "Width of the image")]
+  public int Width { get; set; } = 800;
+  
+  [Option('h', "height", Required = false, Default = 800, HelpText = "Height of the image")]
+  public int Height { get; set; } = 800;
 
-  [Option('h', "height", Required = true, HelpText = "Image height in pixels.")]
-  public int Height { get; set; }
-
-  [Option('p', "fps", Required = false, Default = 30.0f, HelpText = "Frames per second.")]
-  public float FPS { get; set; } = 30.0f;
-
-  [Option('f', "frames", Required = false, Default = 60, HelpText = "Number of output frames.")]
-  public int Frames { get; set; } = 60;
-
-  [Option('o', "output", Required = false, Default = "anim/out{0:0000}.png", HelpText = "Output file-name mask.")]
-  public string FileMask { get; set; } = "anim/out{0:0000}.png";
 }
 
-internal class Program
+namespace _05_Animation
 {
-  // Constants for tile colors
-  private static Rgba32 BackgroundColor = new(0xFF, 0xFF, 0xFF); // White background
-  private static Rgba32 DrawColor       = new(0x10, 0x20, 0x80); // Blue lines
+    class Program
+    {
+            static void Main(string[] args)
+            {
+                Parser.Default.ParseArguments<Options>(args)
+                .WithParsed<Options>(o =>
+                {
+                    int width = o.Width;
+                    int height = o.Height;
 
-  static void Main (string[] args)
-  {
-    Parser.Default.ParseArguments<Options>(args)
-       .WithParsed<Options>(o =>
-       {
-         int frames = Math.Max(10, o.Frames);  // at least 10 frames
-         PointF center = new(0.5f * o.Width, 0.5f * o.Height);
-         float radius = Math.Min(center.X, center.Y) * 0.9f;
-         float velocity = (float)(Math.PI * 0.4);   // in "radians per second"
+                    using var image = new Image<Rgba32>(width, height, Color.White);
+                    PointF center = new PointF(width / 2f, height / 2f);
 
-         for (int frame = 0; frame < frames; frame++ )
-         {
-           // Create a new image with the specified dimensions
-           using (var image = new Image<Rgba32>(o.Width, o.Height, BackgroundColor))
-           {
-             float time = frame / o.FPS;
-             float angle = time * velocity;
-             PointF target = center + radius * new PointF((float)Math.Sin(angle), -(float)Math.Cos(angle));
+                    int frameIndex = 0;
 
-             image.Mutate(i => i.DrawLine(DrawColor, 3.0f, center, target));
+                    Mandalas mandala = new Mandalas();
+                    mandala.Flower(image, center, width, height, ref frameIndex);
+                });
+            }
+    }
+    class Mandalas
+    {
+        public void Flower(Image<Rgba32> image, PointF center, int width, int height, ref int frameIndex)
+        {
+            int hexaCount = 8;
+            int segmentCount = 24;
+            float maxRadius = Math.Min(width, height) / 2f - 10f;
 
-             // Save the frame to a file with the synthetic filename
-             string fileName = string.Format(o.FileMask, frame);
-             image.Save(fileName);
+            //circulo central
+            image.Mutate(ctx =>
+            {
+                ctx.Fill(Color.HotPink, new EllipsePolygon(center, 20));
+            });
+            SaveFrame(image, ref frameIndex);
 
-             Console.WriteLine($"Frame '{fileName}' created successfully.");
-           }
-         }
-       });
-  }
+            // rayos
+            float startRadius = maxRadius / hexaCount;
+            for (int j = 0; j < segmentCount; j++)
+            {
+                var pen = Pens.Solid(
+                    Color.FromRgb((byte)(j * 20), 100, 200),
+                    3
+                );
+                double angle = (Math.PI * 2 / segmentCount) * j;
+
+                PointF start = new PointF(
+                    center.X + (float)(startRadius * Math.Cos(angle)),
+                    center.Y + (float)(startRadius * Math.Sin(angle))
+                );
+                PointF end = new PointF(
+                    center.X + (float)(maxRadius * Math.Cos(angle)),
+                    center.Y + (float)(maxRadius * Math.Sin(angle))
+                );
+
+                var pathBuilder = new PathBuilder();
+                pathBuilder.AddLine(start, end);
+                IPath line = pathBuilder.Build();
+
+                image.Mutate(ctx =>
+                {
+                    ctx.Draw(pen, line);
+                });
+                SaveFrame(image, ref frameIndex);
+            }
+
+            //hexagonos 
+            for (int i = 1; i <= hexaCount; i++)
+            {
+                float radius = (maxRadius / hexaCount) * i;
+                PointF[] points = GenerateHex(center, radius, 0);
+                image.Mutate(ctx =>
+                {
+                    ctx.DrawPolygon(
+                        Color.FromRgb((byte)(i * 40), 100, 200),
+                        3,
+                        points
+                    );
+                });
+                SaveFrame(image, ref frameIndex);
+            }
+
+            for (int i = 1; i <= hexaCount; i++)
+            {
+                float radius = (maxRadius / hexaCount) * i;
+                PointF[] points = GenerateHex(center, radius, MathF.PI / 4);
+                image.Mutate(ctx =>
+                {
+                    ctx.DrawPolygon(
+                        Color.FromRgb((byte)(i * 40), 200, 100),
+                        3,
+                        points
+                    );
+                });
+                SaveFrame(image, ref frameIndex);
+            }
+
+            for (int i = 1; i <= hexaCount; i++)
+            {
+                float radius = (maxRadius / hexaCount) * i;
+                PointF[] points = GenerateHex(center, radius, MathF.PI / 2);
+                image.Mutate(ctx =>
+                {
+                    ctx.DrawPolygon(
+                        Color.FromRgb((byte)(i * 40), 100, 200),
+                        3,
+                        points
+                    );
+                });
+                SaveFrame(image, ref frameIndex);
+            }
+
+            for (int i = 1; i <= hexaCount; i++)
+            {
+                float radius = (maxRadius / hexaCount) * i;
+                PointF[] points = GenerateHex(center, radius, -MathF.PI / 4);
+                image.Mutate(ctx =>
+                {
+                    ctx.DrawPolygon(
+                        Color.FromRgb((byte)(i * 40), 200, 100),
+                        3,
+                        points
+                    );
+                });
+                SaveFrame(image, ref frameIndex);
+            }
+        }
+        private PointF[] GenerateHex(PointF center, float radius, float rotationAngle)
+        {
+            var points = new PointF[6];
+            for (int j = 0; j < 6; j++)
+            {
+                float angle = j * MathF.PI / 3f; 
+                float x = center.X + radius * MathF.Cos(angle);
+                float y = center.Y + radius * MathF.Sin(angle);
+
+                if (rotationAngle != 0)
+                {
+                    float dx = x - center.X;
+                    float dy = y - center.Y;
+
+                    float rotatedX = dx * MathF.Cos(rotationAngle) - dy * MathF.Sin(rotationAngle);
+                    float rotatedY = dx * MathF.Sin(rotationAngle) + dy * MathF.Cos(rotationAngle);
+
+                    x = center.X + rotatedX;
+                    y = center.Y + rotatedY;
+                }
+
+                points[j] = new PointF(x, y);
+            }
+
+            return points;
+        }
+        private void SaveFrame(Image<Rgba32> image, ref int frameIndex)
+        {
+            string folderPath = "Frames";
+
+            if (!Directory.Exists(folderPath))
+                Directory.CreateDirectory(folderPath);
+
+            string fileName = System.IO.Path.Combine(folderPath, $"out{frameIndex:0000}.png");
+            image.Save(fileName);
+            Console.WriteLine($"Frame {frameIndex} -> {fileName} generated");
+            frameIndex++;
+        }
+    }
 }

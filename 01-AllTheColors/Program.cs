@@ -1,81 +1,278 @@
-﻿using CommandLine;
+using System;
+using CommandLine;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.ColorSpaces;
-using SixLabors.ImageSharp.ColorSpaces.Conversion;
 using SixLabors.ImageSharp.PixelFormats;
-
-namespace _01_AllTheColors;
+using SixLabors.ImageSharp.Processing; 
+using System.Collections.Generic;
 
 public class Options
 {
-  [Option('w', "width", Required = false, Default = 400, HelpText = "Image width in pixels.")]
-  public int Width { get; set; }
+    [Option('m', "Mode", Required = true, HelpText = "Trivial mode: 1, Random mode: 2, Ornament mode: 3")]
+    public int Mode { get; set; }
 
-  [Option('h', "height", Required = false, Default = 300, HelpText = "Image height in pixels.")]
-  public int Height { get; set; }
+    [Option('o', "Output", Required = true, HelpText = "Out put file name with .png extension")]
+    public string OutputFileName { get; set; }
 
-  [Option('t', "tile-size", Required = false, Default = 10, HelpText = "Tile size in pixels.")]
-  public int TileSize { get; set; }
+    [Option('w', "width", Required = false, Default = 4096, HelpText = "Image width in pixels.")]
+    public int Width { get; set; }
 
-  [Option('o', "output", Required = false, Default = "output.png", HelpText = "Output file-name.")]
-  public string FileName { get; set; } = "output.png";
-
-  [Option("hsv1", Required = false, HelpText = "Color1 in HSV format (Hue in degrees, Sat 0.0 to 1.0, Val 0.0 to 1.0).")]
-  public IEnumerable<float>? Hsv1 { get; set; }
-
-  [Option("hsv2", Required = false, HelpText = "Color2 in HSV format (Hue in degrees, Sat 0.0 to 1.0, Val 0.0 to 1.0).")]
-  public IEnumerable<float>? Hsv2 { get; set; }
+    [Option('h', "height", Required = false, Default = 4096, HelpText = "Image height in pixels.")]
+    public int Height { get; set; }
 }
 
-internal class Program
+class Program
 {
-  // Constants for tile colors
-  private static Rgba32 FirstColor  = new Rgba32(0x23, 0xB0, 0xF1); // default is Blue (#2020ff)
-  private static Rgba32 SecondColor = new Rgba32(0xAB, 0xCD, 0x99); // default is Red  (#ff2020)
+    static void Main(string[] args)
+    {
+        Parser.Default.ParseArguments<Options>(args)
+        .WithParsed<Options>(o =>
+        {
+            if (o.Mode < 1 || o.Mode > 3)
+            {
+                throw new ArgumentException("Mode should be 1 (Trivial mode), 2(Random mode) or 3(ornamentmode)");
+            }
+            if (!o.OutputFileName.EndsWith(".png"))
+            {
+                throw new ArgumentException("Name of the output file should have the extension .png.");
+            }
+            // Indicate which Mode is activated
+            Console.WriteLine($"Mode {o.Mode} activated");
+            
+            int width = o.Width;
+            int height = o.Height;
+            int maxcombinationcolors = 16777216;
+            if(width > 32768)
+            {
+                throw new ArgumentException("Recommended limit for width is less than 32768 pixels");
+            }
+            if(height > 32768)
+            {
+                throw new ArgumentException("Recommended limit for height is less than 32768 pixels");
+            }
 
-  static void Main (string[] args)
-  {
-    Parser.Default.ParseArguments<Options>(args)
-       .WithParsed<Options>(o =>
-       {
-         if (o.Hsv1 != null && o.Hsv1.Count() >= 3)
-         {
-           var hsvList = o.Hsv1.ToList();
-           var hsvColor = new Hsv(hsvList[0], hsvList[1], hsvList[2]);
-           var rgbColor = ColorSpaceConverter.ToRgb(hsvColor);
-           FirstColor = new Rgba32(rgbColor.R, rgbColor.G, rgbColor.B);
-         }
+            if (width * height < maxcombinationcolors)
+            {
+                throw new ArgumentException("The image must contain at least 2^24 pixels.");
+            }
+            switch (o.Mode)
+            {
+                case 1: // Mode Trivial
+                    CreateTrivialImage(width, height, o.OutputFileName);
+                    break;
+                case 2: // Mode Random
+                    CreateRandomImage(width, height, o.OutputFileName);
+                    break;
+                case 3: // Mode Ornament
+                    CreateOrnamentImage(width, height, o.OutputFileName);
+                    break;
+            }
+        });
+    }     
 
-         if (o.Hsv2 != null && o.Hsv2.Count() >= 3)
-         {
-           var hsvList = o.Hsv2.ToList();
-           var hsvColor = new Hsv(hsvList[0], hsvList[1], hsvList[2]);
-           var rgbColor = ColorSpaceConverter.ToRgb(hsvColor);
-           SecondColor = new Rgba32(rgbColor.R, rgbColor.G, rgbColor.B);
-         }
-        
-         // Create a new image with the specified dimensions
-         using (var image = new Image<Rgba32>(o.Width, o.Height))
-         {
-           for (int y = 0; y < o.Height; y++)
-           {
-             for (int x = 0; x < o.Width; x++)
-             {
-               // Determine the tile color based on position
-               Rgba32 tileColor = ((x / o.TileSize) + (y / o.TileSize)) % 2 == 0 
-               ? FirstColor   // even tiles 
-               : SecondColor; // odd tiles
+    static void CreateTrivialImage(int width, int height, string fileName)
+    {
+        int maxcombinationcolors = 16777216;
+        List<Rgba32> colors = new List<Rgba32>();
+        for (int r = 0; r < 256; r++)
+        {
+            for (int g = 0; g < 256; g++)
+            {
+                for (int b = 0; b < 256; b++)
+                {
+                    colors.Add(new Rgba32((byte)r, (byte)g, (byte)b));
+                }
+            }
+        }
 
-               // Set the pixel color
-               image[x, y] = tileColor;
-             }
-           }
+        using (var image = new Image<Rgba32>(width, height))
+        {
+            int colorIndex = 0;
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    image[x, y] = colors[colorIndex];
+                    colorIndex++;
+                    if (colorIndex >= maxcombinationcolors) break;
+                }
+                if (colorIndex >= maxcombinationcolors) break;
+            }
 
-           // Save the image to a file with the specified filename
-           image.Save(o.FileName);
+            try
+            {
+                image.Save(fileName);
+                Console.WriteLine("Image stored correctly");
+                
+                // Image verificator
+                bool isValid = IsImageValid(fileName);
+                Console.WriteLine(isValid ? "Image valid." : "Image corrupted.");
+            }       
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error on storing the image: {ex.Message}");
+            }
+        }
+    }
+    
+    static void CreateRandomImage(int width, int height, string fileName)
+    {
+        int maxcombinationcolors = 16777216;
+        int colorIndex = 0;
+        List<Rgba32> colors = new List<Rgba32>();
+        for (int r = 0; r < 256; r++)
+        {
+            for (int g = 0; g < 256; g++)
+            {
+                for (int b = 0; b < 256; b++)
+                {
+                    colors.Add(new Rgba32((byte)r, (byte)g, (byte)b));
+                }
+            }
+        }
 
-           Console.WriteLine($"Image '{o.FileName}' created successfully.");
-         }
-       });
-  }
+        Random rng = new Random();
+        int n = colors.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = rng.Next(n + 1);
+            var value = colors[k];
+            colors[k] = colors[n];
+            colors[n] = value;
+        }
+
+        using (var image = new Image<Rgba32>(width, height))
+        {
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    image[x, y] = colors[colorIndex];
+                    if (colorIndex < maxcombinationcolors - 1)
+                    {
+                        colorIndex++;
+                    }
+                    else
+                    {
+                        colorIndex = 0;
+                    }
+                }
+            }
+            try
+            {
+                image.Save(fileName);
+                Console.WriteLine("Image stored correctly");
+                
+                // Image verificator
+                bool isValid = IsImageValid(fileName);
+                Console.WriteLine(isValid ? "Image valid." : "Image corrupted.");
+            }       
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error on storing the image: {ex.Message}");
+            }
+        }
+    }
+
+    static void CreateOrnamentImage(int width, int height, string fileName)
+    {
+        int colorIndex = 0;
+        List<Rgba32> colors1 = new List<Rgba32>();
+        for (int r = 0; r < 256; r++)
+        {
+            for (int g = 0; g < 256; g++)
+            {
+                for (int b = 0; b < 256; b++)
+                {
+                    colors1.Add(new Rgba32((byte)r, (byte)g, (byte)b));
+                }
+            }
+        }
+
+        using (var image = new Image<Rgba32>(width, height))
+        {
+            int x = width / 2;
+            int y = height / 2;
+            colorIndex = 0; 
+
+            image[x, y] = colors1[colors1.Count - 1]; 
+            FillAroundPixel(image, x, y, colors1);
+
+            try
+            {
+                image.Save(fileName);
+                Console.WriteLine("Image stored correctly");
+                
+                // Image verificator
+                bool isValid = IsImageValid(fileName);
+                Console.WriteLine(isValid ? "Image valid." : "Image corrupted.");
+            }       
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error on storing the image: {ex.Message}");
+            }
+        }
+    }
+
+    static void FillAroundPixel(Image<Rgba32> image, int startX, int startY, List<Rgba32> colors)
+    {
+        int width = image.Width;
+        int height = image.Height;
+
+        // Create an array to keep track of processed pixels
+        bool[,] processed = new bool[width, height];
+
+        // Initialize the list of pixels to process
+        var pixelsToProcess = new Queue<(int x, int y)>();
+        pixelsToProcess.Enqueue((startX, startY));
+
+        // Directions for adjacent pixels
+        var directions = new (int x, int y)[]
+        {
+            (0, -1), // Up
+            (1, 0),  // Right
+            (0, 1),  // Down
+            (-1, 0)  // Left
+        };
+
+        int colorIndex = 0; // Start the color index
+
+        // Process until there are no more pixels to process
+        while (pixelsToProcess.Count > 0)
+        {
+            var (x, y) = pixelsToProcess.Dequeue();
+
+            // Check boundaries
+            if (x < 0 || x >= width || y < 0 || y >= height || processed[x, y])
+                continue;
+
+            // Set the color of the current pixel
+            image[x, y] = colors[colorIndex % colors.Count]; // Assign color from the list
+            processed[x, y] = true;
+
+            // Update the color index
+            colorIndex++;
+            
+            // Add adjacent pixels to the queue
+            foreach (var (dx, dy) in directions)
+            {
+                pixelsToProcess.Enqueue((x + dx, y + dy));
+            }
+        }
+    }
+
+    static bool IsImageValid(string filePath)
+    {
+        try
+        {
+            using (var image = Image.Load(filePath))
+            {
+                return true;
+            }
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
 }

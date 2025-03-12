@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "01-AllTheColors": {
-      "commandName": "Project",
-      "workingDirectory": "$(ProjectDir)"
-    }
-  }
-}

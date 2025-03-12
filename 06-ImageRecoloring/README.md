@@ -1,96 +1,21 @@
-# Task 06-ImageRecoloring
-Your task is to implement image recoloring (i.e., targeted hue changes) in a way that
-preserves skin tones, so that the algorithm can be applied to portraits.
+# Documentation of the task "06-ImageRecoloring"
 
-The recommended method is to use HSV (or similar) color space, identify skin
-tone pixels, and change the Hue of all other (non-skin) pixels according
-to the desired parameters. Simple "Hue shift" would be sufficient.
+## Author
+Pau Azpeitia Bergos
 
-# Ideas
-Try AI or Google to get ideas about skin tone detection (Google "skin color detection hsv"
-or "skin tone detection").
+## Command line arguments
+i: Direccion of the image to be modified
+o: Name of the modified image
+h: Specify by how many degrees (hsv) to change the Hue of pixels not detected as skin.
 
-### RGB <-> HSV conversion in `SixLabors.ImageSharp`
-A short snippet shows how to convert colors from `Rgba32` to `Rgb`, `Hsv` and back:
-```csharp
-using SixLabors.ImageSharp.ColorSpaces.Conversion;
-using SixLabors.ImageSharp.ColorSpaces;
+## Input data
+The user's input data must be an image supported by ImageSharp (JPEG, PNG, GIF, BMP, TIFF, WebP, ICO); otherwise, the program will throw an exception.
 
-  ...
-  Rgba32 inputColor = new(0xFF, 0x80, 0xA8);
-  Rgb inputRgb = new(inputColor.R, inputColor.G, inputColor.B);
-  Hsv inputHsv = ColorSpaceConverter.ToHsv(inputRgb);
+## Algorithm
+The program first ensures that the arguments it is working with are valid (input and output names). From there with two for loops it detects each pixel of the image (x,y) and with the function RgbToHsv it changes from rgb to Hsv format. After that it detects with the function IsSkinTone if the pixel has the normal human skin colors. Note that the parameters are impossible to make exact as they often depend also on the sharpness and dynamic range of the image. If it is not detected as skin color, the value of the Hue argument is moved by plus the Hue argument value (making sure that it is in the range 0-360). If it is detected as skin color, nothing happens in that iteration. After this change it is converted again from Hsv to Rgb with the function HsvToRgb, and the image is saved.
 
-  // Now we can play with inputHsv.
-  float deltaH = 30.0f;
-  Hsv outputHsv = new(inputHsv.H + deltaH, inputHsv.S, inputHsv.V);
+## Extra work / Bonuses
+-
 
-  Rgb outputRgb = ColorSpaceConverter.ToRgb(outputHsv);
-  Rgba32 outputColor = new(outputRgb.R, outputRgb.G, outputRgb.B);
-```
-
-# Command line arguments
-* `-i <input>` - to specify the input image
-* `-o <output>` - to specify the output image (it will have the same pixel resolution)
-* `-h <Hue-delta>` - integer/float number to use for Hue recoloring. Both positive and
-  negative values are allowed, the preferred scale is degrees. Zero means "no recoloring",
-  you can use this value for debugging (e.g. visualizing the skin tone pixels)
-* Any additional command line arguments you like. Don't forget to describe them
-  in the documentation
-
-# Your solution
-Please place your solution in a separate [solutions](solutions/README.md)
-directory in the repository. You'll find short instructions there.
-
-# Launch date
-**Thursday 14 November 2024**
-(Don't work on the solution before this date)
-
-# Deadline
-See the shared [point table](https://docs.google.com/spreadsheets/d/11OnE4a-b27eOJ00pfbsYOk7uSdr0hzKrELs_vFG3a_Q/edit?usp=sharing).
-
-# Credit points
-**Basic solution: 7 points**
-* Any input image (readable by the `ImageSharp` library) should be accepted as an input
-* **Hue-shift** indegrees via argument
-* output filename specified in an argument
-* documentation in the `README.md` file (including definition of all command
-  line arguments)
-* detection of skin tone pixels at basic level, acceptable in most cases
-
-**Bonus points: up to 7 more points**
-* better (more robust) skin detection
-* original study of skin tones (at least 20 photographs should be used to achieve
-  good result)
-* fuzzy skin detection (continuous transition between "skin" and "non-skin" colors)
-* more advanced Hue transforms (must be described in detail in your documentation)
-
-## Use of AI assistant
-Using an AI assistant is recommended! But you have to be critical and
-test all its suggestions thoroughly.
-
-# Example
-Set of three images, the middle one is the original photo, the other two
-have been altered by hue changes (Photos copyright by David Marek).
-
-![Hue-](MarekDavid-1.jpg)
-![Original](MarekDavid-2.jpg)
-![Hue+](MarekDavid-3.jpg)
-
-## Input images
-
-[![01-beard](_01-beard.jpg)](01-beard.jpg)
-[![02-disk](_02-disk.jpg)](02-disk.jpg)
-[![03-bicycle](_03-bicycle.jpg)](03-bicycle.jpg)
-
-[![04-theater](_04-theater.jpg)](04-theater.jpg)
-[![05-face](_05-face.jpg)](05-face.jpg)
-[![06-selfie](_06-selfie.jpg)](06-selfie.jpg)
-
-[![07-laugh](_07-laugh.jpg)](07-laugh.jpg)
-[![08-girl](_08-girl.jpg)](08-girl.jpg)
-[![09-egsr](_09-egsr.jpg)](09-egsr.jpg)
-
-[![10-hat](_10-hat.jpg)](10-hat.jpg)
-[![11-bara](_11-bara.jpg)](11-bara.jpg)
-[![12-photographer](_12-photographer.jpg)](12-photographer.jpg)
+## Use of AI
+I have not used the help of any artificial intelligence.
